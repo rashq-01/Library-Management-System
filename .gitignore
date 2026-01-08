@@ -11,7 +11,7 @@ c-c++/temp
 
 # Ignore macOS system files
 .DS_Store
-.env
+server/*.env
 
 # Ignore Windows system files
 Thumbs.db

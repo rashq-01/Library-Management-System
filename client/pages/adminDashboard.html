@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibraTech | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2c3e50;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #6c757d;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --border-radius: 8px;
+            --sidebar-width: 250px;
+            --header-height: 70px;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: var(--light-gray);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Dashboard Layout */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: var(--header-height);
+        }
+
+        .dashboard-sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--secondary);
+            color: var(--white);
+            position: fixed;
+            left: 0;
+            top: var(--header-height);
+            height: calc(100vh - var(--header-height));
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 900;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            background-color: var(--light-gray);
+            min-height: calc(100vh - var(--header-height));
+        }
+
+        /* Navbar */
+        nav {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            padding: 15px 30px;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: var(--primary);
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+
+        /* Sidebar Content */
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .user-role {
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: #ddd;
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border-left-color: var(--primary);
+        }
+
+        .menu-item.active {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--white);
+            border-left-color: var(--primary);
+        }
+
+        .menu-item i {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .menu-item span {
+            font-weight: 500;
+        }
+
+        .menu-logout {
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .menu-logout .menu-item {
+            color: #ff6b6b;
+        }
+
+        .menu-logout .menu-item:hover {
+            background-color: rgba(255, 107, 107, 0.1);
+            color: #ff6b6b;
+        }
+
+        /* Dashboard Content */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.2rem;
+            color: var(--secondary);
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-card {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            border-top: 4px solid var(--primary);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: rgba(52, 152, 219, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .card-label {
+            color: var(--dark-gray);
+            font-size: 1rem;
+        }
+
+        .card-change {
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .positive {
+            color: #27ae60;
+        }
+
+        .negative {
+            color: #e74c3c;
+        }
+
+        .dashboard-section {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+
+        .section-header a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .section-header a:hover {
+            text-decoration: underline;
+        }
+
+        .recent-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .recent-table th {
+            text-align: left;
+            padding: 15px 10px;
+            border-bottom: 2px solid var(--medium-gray);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .recent-table td {
+            padding: 15px 10px;
+            border-bottom: 1px solid var(--medium-gray);
+            color: var(--dark-gray);
+        }
+
+        .recent-table tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-issued {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary);
+        }
+
+        .status-overdue {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .status-returned {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            z-index: 1001;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .dashboard-sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .dashboard-sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .dashboard-main {
+                margin-left: 0;
+            }
+            
+            .mobile-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .recent-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .dashboard-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            nav {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav>
+        <div class="navbar">
+            <a href="#" class="logo">
+                <i class="fas fa-book"></i>
+                LibraTech
+            </a>
+        </div>
+    </nav>
+
+    <!-- Dashboard Layout -->
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="dashboard-sidebar" id="dashboardSidebar">
+            <div class="sidebar-header">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-name">John Doe</div>
+                    <div class="user-role">Library Admin</div>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <a href="#" class="menu-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-book"></i>
+                    <span>Books</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span>Issue / Return</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+                
+                <div class="menu-logout">
+                    <a href="#" class="menu-item" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <div class="dashboard-header">
+                <h1>Dashboard Overview</h1>
+                <div class="dashboard-date">
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+            
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value">2,543</div>
+                            <div class="card-label">Total Books</div>
+                        </div>
+                        <div class="card-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    </div>
+                    <div class="card-change positive">
+                        <i class="fas fa-arrow-up"></i> 125 added this month
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value">1,234</div>
+                            <div class="card-label">Active Students</div>
+                        </div>
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="card-change positive">
+                        <i class="fas fa-arrow-up"></i> 45 new this month
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value">342</div>
+                            <div class="card-label">Books Issued</div>
+                        </div>
+                        <div class="card-icon">
+                            <i class="fas fa-book-reader"></i>
+                        </div>
+                    </div>
+                    <div class="card-change positive">
+                        <i class="fas fa-arrow-up"></i> 12% from last week
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-value">23</div>
+                            <div class="card-label">Overdue Books</div>
+                        </div>
+                        <div class="card-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    <div class="card-change negative">
+                        <i class="fas fa-arrow-down"></i> 3 resolved today
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activities -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2>Recent Transactions</h2>
+                    <a href="#">View All</a>
+                </div>
+                <table class="recent-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Book</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Alice Johnson</td>
+                            <td>The Great Gatsby</td>
+                            <td>2023-10-15</td>
+                            <td>2023-10-29</td>
+                            <td><span class="status-badge status-issued">Issued</span></td>
+                        </tr>
+                        <tr>
+                            <td>Bob Smith</td>
+                            <td>To Kill a Mockingbird</td>
+                            <td>2023-10-10</td>
+                            <td>2023-10-24</td>
+                            <td><span class="status-badge status-overdue">Overdue</span></td>
+                        </tr>
+                        <tr>
+                            <td>Carol Williams</td>
+                            <td>1984</td>
+                            <td>2023-10-05</td>
+                            <td>2023-10-19</td>
+                            <td><span class="status-badge status-returned">Returned</span></td>
+                        </tr>
+                        <tr>
+                            <td>David Brown</td>
+                            <td>Pride and Prejudice</td>
+                            <td>2023-10-18</td>
+                            <td>2023-11-01</td>
+                            <td><span class="status-badge status-issued">Issued</span></td>
+                        </tr>
+                        <tr>
+                            <td>Emma Davis</td>
+                            <td>The Catcher in the Rye</td>
+                            <td>2023-10-12</td>
+                            <td>2023-10-26</td>
+                            <td><span class="status-badge status-issued">Issued</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Popular Books -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2>Popular Books This Month</h2>
+                    <a href="#">View All</a>
+                </div>
+                <table class="recent-table">
+                    <thead>
+                        <tr>
+                            <th>Book Title</th>
+                            <th>Author</th>
+                            <th>Category</th>
+                            <th>Issued Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>The Great Gatsby</td>
+                            <td>F. Scott Fitzgerald</td>
+                            <td>Fiction</td>
+                            <td>24</td>
+                        </tr>
+                        <tr>
+                            <td>To Kill a Mockingbird</td>
+                            <td>Harper Lee</td>
+                            <td>Fiction</td>
+                            <td>19</td>
+                        </tr>
+                        <tr>
+                            <td>1984</td>
+                            <td>George Orwell</td>
+                            <td>Science Fiction</td>
+                            <td>17</td>
+                        </tr>
+                        <tr>
+                            <td>Pride and Prejudice</td>
+                            <td>Jane Austen</td>
+                            <td>Romance</td>
+                            <td>15</td>
+                        </tr>
+                        <tr>
+                            <td>The Catcher in the Rye</td>
+                            <td>J.D. Salinger</td>
+                            <td>Fiction</td>
+                            <td>13</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Mobile Toggle Button -->
+        <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <script>
+        // Set current date in dashboard
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const currentDate = now.toLocaleDateString('en-US', options);
+            
+            const dateElement = document.getElementById('currentDate');
+            if (dateElement) {
+                dateElement.textContent = currentDate;
+            }
+        }
+        
+        // Mobile toggle for sidebar
+        const mobileToggle = document.getElementById('mobileToggle');
+        const dashboardSidebar = document.getElementById('dashboardSidebar');
+        
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                dashboardSidebar.classList.toggle('active');
+            });
+        }
+        
+        // Close sidebar when clicking on a menu item (for mobile)
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+            
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all items
+                    menuItems.forEach(i => i.classList.remove('active'));
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // On mobile, close sidebar after clicking
+                    if (window.innerWidth <= 992) {
+                        dashboardSidebar.classList.remove('active');
+                    }
+                });
+            });
+            
+            // Logout functionality
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('Are you sure you want to logout?')) {
+                        alert('Logged out successfully!');
+                        // In a real application, you would redirect to login page
+                        // window.location.href = 'login.html';
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

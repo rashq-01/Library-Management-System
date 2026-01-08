@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibraTech | Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/client/css/login.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <i class="fas fa-book-reader"></i>
+                    <span>LibraTech</span>
+                </div>
+                <h1>Welcome Back</h1>
+                <p>Sign in to access your library account</p>
+            </div>
+            
+            <div class="auth-body">
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email / Roll No</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="email" class="form-control" placeholder="Enter your email or roll number" required>
+                        </div>
+                        <div class="error-message" id="emailError">Please enter a valid email or roll number</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                        </div>
+                        <div class="error-message" id="passwordError">Password must be at least 6 characters</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="role">Role</label>
+                        <div class="select-wrapper">
+                            <select id="role" class="form-control" required>
+                                <option value="" disabled selected>Select your role</option>
+                                <option value="admin">Admin</option>
+                                <option value="student">Student</option>
+                            </select>
+                        </div>
+                        <div class="error-message" id="roleError">Please select a role</div>
+                    </div>
+                    
+                    <div class="form-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember">
+                            <label for="remember">Remember me</label>
+                        </div>
+                        <a href="#" class="forgot-password">Forgot Password?</a>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="register.htm">Register here</a></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="back-home">
+            <a href="/">
+                <i class="fas fa-arrow-left"></i>
+                Back to Homepage
+            </a>
+        </div>
+    </div>
+    <script src="/client/js/login.js"></script>
+</body>
+</html>
