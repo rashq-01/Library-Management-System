@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LibraTech | Dashboard</title>
+    <title>Admin Dashboard | LibraTech</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -26,6 +26,9 @@
             --border-radius: 8px;
             --sidebar-width: 250px;
             --header-height: 70px;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
         }
 
         body {
@@ -35,95 +38,31 @@
             background-color: var(--light-gray);
         }
 
-        .btn {
-            display: inline-block;
-            padding: 12px 28px;
-            border-radius: var(--border-radius);
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            border: none;
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: var(--white);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
         /* Dashboard Layout */
         .dashboard-container {
             display: flex;
             min-height: 100vh;
-            padding-top: var(--header-height);
         }
 
+        /* Sidebar */
         .dashboard-sidebar {
             width: var(--sidebar-width);
             background-color: var(--secondary);
             color: var(--white);
             position: fixed;
             left: 0;
-            top: var(--header-height);
-            height: calc(100vh - var(--header-height));
+            top: 0;
+            height: 100vh;
             overflow-y: auto;
             transition: transform 0.3s ease;
-            z-index: 900;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .dashboard-main {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            padding: 30px;
-            background-color: var(--light-gray);
-            min-height: calc(100vh - var(--header-height));
-        }
-
-        /* Navbar */
-        nav {
-            background-color: var(--white);
-            box-shadow: var(--shadow);
-            position: fixed;
-            width: 100%;
-            top: 0;
             z-index: 1000;
-            padding: 15px 30px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
         }
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--secondary);
-            text-decoration: none;
-        }
-
-        .logo i {
-            color: var(--primary);
-            margin-right: 10px;
-            font-size: 2rem;
-        }
-
-        /* Sidebar Content */
         .sidebar-header {
             padding: 25px 20px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
+            background-color: rgba(0, 0, 0, 0.2);
         }
 
         .user-info {
@@ -133,26 +72,31 @@
         }
 
         .user-avatar {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 15px;
-            font-size: 1.8rem;
+            font-size: 2rem;
+            border: 3px solid rgba(255, 255, 255, 0.2);
         }
 
         .user-name {
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             margin-bottom: 5px;
         }
 
         .user-role {
-            color: #bbb;
+            color: var(--primary);
             font-size: 0.9rem;
+            font-weight: 500;
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 3px 10px;
+            border-radius: 20px;
         }
 
         .sidebar-menu {
@@ -167,6 +111,7 @@
             text-decoration: none;
             transition: all 0.3s;
             border-left: 4px solid transparent;
+            margin-bottom: 5px;
         }
 
         .menu-item:hover {
@@ -207,24 +152,84 @@
             color: #ff6b6b;
         }
 
-        /* Dashboard Content */
+        /* Main Content */
+        .dashboard-main {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+
         .dashboard-header {
+            background-color: var(--white);
+            padding: 20px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--medium-gray);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .dashboard-header h1 {
-            font-size: 2.2rem;
+        .header-left h1 {
+            font-size: 1.8rem;
             color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        .header-left p {
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+            margin-top: 5px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification i {
+            font-size: 1.3rem;
+            color: var(--dark-gray);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .current-date {
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 30px;
+        }
+
+        /* Dashboard Cards */
         .dashboard-cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 25px;
             margin-bottom: 40px;
         }
@@ -235,58 +240,76 @@
             padding: 25px;
             box-shadow: var(--shadow);
             transition: transform 0.3s;
-            border-top: 4px solid var(--primary);
+            border-top: 4px solid;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .dashboard-card:hover {
             transform: translateY(-5px);
         }
 
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .card-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: rgba(52, 152, 219, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            color: var(--primary);
-        }
-
-        .card-value {
+        .card-info h3 {
             font-size: 2.5rem;
             font-weight: 700;
             color: var(--secondary);
             margin-bottom: 5px;
         }
 
-        .card-label {
+        .card-info p {
             color: var(--dark-gray);
             font-size: 1rem;
         }
 
-        .card-change {
-            font-size: 0.9rem;
-            margin-top: 10px;
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
         }
 
-        .positive {
-            color: #27ae60;
+        .card-total-books {
+            border-top-color: var(--primary);
         }
 
-        .negative {
-            color: #e74c3c;
+        .card-total-books .card-icon {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary);
         }
 
-        .dashboard-section {
+        .card-issued-books {
+            border-top-color: var(--warning);
+        }
+
+        .card-issued-books .card-icon {
+            background-color: rgba(243, 156, 18, 0.1);
+            color: var(--warning);
+        }
+
+        .card-students {
+            border-top-color: var(--success);
+        }
+
+        .card-students .card-icon {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+        }
+
+        .card-late-returns {
+            border-top-color: var(--danger);
+        }
+
+        .card-late-returns .card-icon {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+        }
+
+        /* Content Sections */
+        .content-section {
             background-color: var(--white);
             border-radius: var(--border-radius);
             padding: 30px;
@@ -299,44 +322,104 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--medium-gray);
         }
 
         .section-header h2 {
             font-size: 1.5rem;
             color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .section-header a {
+        .section-header h2 i {
             color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
             font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .section-header a:hover {
-            text-decoration: underline;
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
         }
 
-        .recent-table {
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background-color: #229954;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: var(--white);
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: var(--white);
+        }
+
+        .btn-warning:hover {
+            background-color: #d68910;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Tables */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
 
-        .recent-table th {
+        .data-table th {
+            background-color: var(--medium-gray);
+            padding: 15px 12px;
             text-align: left;
-            padding: 15px 10px;
-            border-bottom: 2px solid var(--medium-gray);
-            color: var(--secondary);
             font-weight: 600;
+            color: var(--secondary);
+            border-bottom: 2px solid var(--dark-gray);
         }
 
-        .recent-table td {
-            padding: 15px 10px;
+        .data-table td {
+            padding: 15px 12px;
             border-bottom: 1px solid var(--medium-gray);
             color: var(--dark-gray);
         }
 
-        .recent-table tr:hover {
+        .data-table tr:hover {
             background-color: rgba(52, 152, 219, 0.05);
         }
 
@@ -348,6 +431,11 @@
             font-weight: 500;
         }
 
+        .status-available {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+        }
+
         .status-issued {
             background-color: rgba(52, 152, 219, 0.1);
             color: var(--primary);
@@ -355,14 +443,221 @@
 
         .status-overdue {
             background-color: rgba(231, 76, 60, 0.1);
-            color: #e74c3c;
+            color: var(--danger);
         }
 
-        .status-returned {
-            background-color: rgba(46, 204, 113, 0.1);
-            color: #27ae60;
+        .status-active {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success);
         }
 
+        .status-inactive {
+            background-color: rgba(149, 165, 166, 0.1);
+            color: var(--dark-gray);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .action-edit {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary);
+        }
+
+        .action-edit:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .action-delete {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger);
+        }
+
+        .action-delete:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* Issue/Return Forms */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--medium-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--medium-gray);
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--dark-gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Fine Calculation Display */
+        .fine-display {
+            background-color: #fff9e6;
+            border-left: 4px solid var(--warning);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-top: 25px;
+        }
+
+        .fine-display h4 {
+            color: var(--warning);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .fine-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--danger);
+            margin: 10px 0;
+        }
+
+        .fine-details {
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            color: var(--secondary);
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--dark-gray);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--medium-gray);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        /* Mobile Toggle */
         .mobile-toggle {
             display: none;
             position: fixed;
@@ -377,7 +672,6 @@
             font-size: 1.5rem;
             z-index: 1001;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
         }
 
         /* Responsive Styles */
@@ -403,77 +697,88 @@
 
         @media (max-width: 768px) {
             .dashboard-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-row {
                 grid-template-columns: 1fr;
             }
             
-            .recent-table {
+            .data-table {
                 display: block;
                 overflow-x: auto;
+            }
+            
+            .header-right {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 10px;
             }
         }
 
         @media (max-width: 576px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
             .dashboard-header {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
             }
             
-            .dashboard-header h1 {
-                font-size: 1.8rem;
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
             }
             
-            nav {
-                padding: 15px 20px;
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1;
+                min-width: 120px;
+                text-align: center;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav>
-        <div class="navbar">
-            <a href="#" class="logo">
-                <i class="fas fa-book"></i>
-                LibraTech
-            </a>
-        </div>
-    </nav>
-
-    <!-- Dashboard Layout -->
     <div class="dashboard-container">
         <!-- Sidebar -->
         <div class="dashboard-sidebar" id="dashboardSidebar">
             <div class="sidebar-header">
                 <div class="user-info">
                     <div class="user-avatar">
-                        <i class="fas fa-user"></i>
+                        <i class="fas fa-user-shield"></i>
                     </div>
-                    <div class="user-name">John Doe</div>
-                    <div class="user-role">Library Admin</div>
+                    <div class="user-name">Admin User</div>
+                    <div class="user-role">Administrator</div>
                 </div>
             </div>
             
             <div class="sidebar-menu">
-                <a href="#" class="menu-item active">
-                    <i class="fas fa-home"></i>
+                <a href="#" class="menu-item active" data-tab="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="#" class="menu-item" data-tab="bookManagement">
                     <i class="fas fa-book"></i>
-                    <span>Books</span>
+                    <span>Book Management</span>
                 </a>
-                <a href="#" class="menu-item">
+                <a href="#" class="menu-item" data-tab="studentManagement">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Student Management</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="issueReturn">
                     <i class="fas fa-exchange-alt"></i>
                     <span>Issue / Return</span>
                 </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-user"></i>
-                    <span>Profile</span>
-                </a>
                 
                 <div class="menu-logout">
-                    <a href="#" class="menu-item" id="logoutBtn">
+                    <a href="index.html" class="menu-item">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a>
@@ -484,179 +789,415 @@
         <!-- Main Content -->
         <div class="dashboard-main">
             <div class="dashboard-header">
-                <h1>Dashboard Overview</h1>
-                <div class="dashboard-date">
-                    <span id="currentDate"></span>
+                <div class="header-left">
+                    <h1><i class="fas fa-book-reader"></i> Admin Dashboard</h1>
+                    <p>Manage library resources and activities</p>
                 </div>
-            </div>
-            
-            <!-- Dashboard Cards -->
-            <div class="dashboard-cards">
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-value">2,543</div>
-                            <div class="card-label">Total Books</div>
-                        </div>
-                        <div class="card-icon">
-                            <i class="fas fa-book"></i>
-                        </div>
-                    </div>
-                    <div class="card-change positive">
-                        <i class="fas fa-arrow-up"></i> 125 added this month
-                    </div>
-                </div>
-                
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-value">1,234</div>
-                            <div class="card-label">Active Students</div>
-                        </div>
-                        <div class="card-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                    <div class="card-change positive">
-                        <i class="fas fa-arrow-up"></i> 45 new this month
-                    </div>
-                </div>
-                
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-value">342</div>
-                            <div class="card-label">Books Issued</div>
-                        </div>
-                        <div class="card-icon">
-                            <i class="fas fa-book-reader"></i>
-                        </div>
-                    </div>
-                    <div class="card-change positive">
-                        <i class="fas fa-arrow-up"></i> 12% from last week
-                    </div>
-                </div>
-                
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-value">23</div>
-                            <div class="card-label">Overdue Books</div>
-                        </div>
-                        <div class="card-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                    </div>
-                    <div class="card-change negative">
-                        <i class="fas fa-arrow-down"></i> 3 resolved today
+                <div class="header-right">
+                    <div class="current-date" id="currentDate"></div>
+                    <div class="notification">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
                     </div>
                 </div>
             </div>
             
-            <!-- Recent Activities -->
-            <div class="dashboard-section">
-                <div class="section-header">
-                    <h2>Recent Transactions</h2>
-                    <a href="#">View All</a>
+            <div class="dashboard-content">
+                <!-- Dashboard Overview -->
+                <div class="tab-content active" id="dashboardTab">
+                    <div class="dashboard-cards">
+                        <div class="dashboard-card card-total-books">
+                            <div class="card-info">
+                                <h3>2,543</h3>
+                                <p>Total Books</p>
+                            </div>
+                            <div class="card-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card card-issued-books">
+                            <div class="card-info">
+                                <h3>342</h3>
+                                <p>Issued Books</p>
+                            </div>
+                            <div class="card-icon">
+                                <i class="fas fa-book-reader"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card card-students">
+                            <div class="card-info">
+                                <h3>1,234</h3>
+                                <p>Students</p>
+                            </div>
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="dashboard-card card-late-returns">
+                            <div class="card-info">
+                                <h3>23</h3>
+                                <p>Late Returns</p>
+                            </div>
+                            <div class="card-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-chart-line"></i> Library Statistics</h2>
+                        </div>
+                        <p>Welcome to the admin dashboard. Use the sidebar to navigate between different management sections.</p>
+                        <div style="margin-top: 20px; padding: 20px; background-color: var(--light-gray); border-radius: var(--border-radius);">
+                            <h3 style="color: var(--secondary); margin-bottom: 10px;">Quick Actions:</h3>
+                            <ul style="list-style-type: none; columns: 2;">
+                                <li style="margin-bottom: 8px;"><i class="fas fa-plus-circle" style="color: var(--success); margin-right: 8px;"></i> Add new books to inventory</li>
+                                <li style="margin-bottom: 8px;"><i class="fas fa-user-plus" style="color: var(--primary); margin-right: 8px;"></i> Register new students</li>
+                                <li style="margin-bottom: 8px;"><i class="fas fa-book-open" style="color: var(--warning); margin-right: 8px;"></i> Issue books to students</li>
+                                <li style="margin-bottom: 8px;"><i class="fas fa-undo-alt" style="color: var(--danger); margin-right: 8px;"></i> Process book returns</li>
+                                <li style="margin-bottom: 8px;"><i class="fas fa-file-invoice-dollar" style="color: var(--danger); margin-right: 8px;"></i> Manage overdue fines</li>
+                                <li style="margin-bottom: 8px;"><i class="fas fa-chart-pie" style="color: var(--success); margin-right: 8px;"></i> Generate reports</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <table class="recent-table">
-                    <thead>
-                        <tr>
-                            <th>Student</th>
-                            <th>Book</th>
-                            <th>Issue Date</th>
-                            <th>Due Date</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Alice Johnson</td>
-                            <td>The Great Gatsby</td>
-                            <td>2023-10-15</td>
-                            <td>2023-10-29</td>
-                            <td><span class="status-badge status-issued">Issued</span></td>
-                        </tr>
-                        <tr>
-                            <td>Bob Smith</td>
-                            <td>To Kill a Mockingbird</td>
-                            <td>2023-10-10</td>
-                            <td>2023-10-24</td>
-                            <td><span class="status-badge status-overdue">Overdue</span></td>
-                        </tr>
-                        <tr>
-                            <td>Carol Williams</td>
-                            <td>1984</td>
-                            <td>2023-10-05</td>
-                            <td>2023-10-19</td>
-                            <td><span class="status-badge status-returned">Returned</span></td>
-                        </tr>
-                        <tr>
-                            <td>David Brown</td>
-                            <td>Pride and Prejudice</td>
-                            <td>2023-10-18</td>
-                            <td>2023-11-01</td>
-                            <td><span class="status-badge status-issued">Issued</span></td>
-                        </tr>
-                        <tr>
-                            <td>Emma Davis</td>
-                            <td>The Catcher in the Rye</td>
-                            <td>2023-10-12</td>
-                            <td>2023-10-26</td>
-                            <td><span class="status-badge status-issued">Issued</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            
-            <!-- Popular Books -->
-            <div class="dashboard-section">
-                <div class="section-header">
-                    <h2>Popular Books This Month</h2>
-                    <a href="#">View All</a>
+                
+                <!-- Book Management -->
+                <div class="tab-content" id="bookManagementTab">
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-book"></i> Book Management</h2>
+                            <button class="btn btn-primary" id="addBookBtn">
+                                <i class="fas fa-plus"></i> Add Book
+                            </button>
+                        </div>
+                        
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Book ID</th>
+                                    <th>Name</th>
+                                    <th>Author</th>
+                                    <th>Category</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>101</td>
+                                    <td>The C++ Programming Language</td>
+                                    <td>Bjarne Stroustrup</td>
+                                    <td>Programming</td>
+                                    <td><span class="status-badge status-available">Available</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-edit"><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>102</td>
+                                    <td>Clean Code</td>
+                                    <td>Robert C. Martin</td>
+                                    <td>Programming</td>
+                                    <td><span class="status-badge status-issued">Issued</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-edit"><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>103</td>
+                                    <td>Design Patterns</td>
+                                    <td>Erich Gamma</td>
+                                    <td>Programming</td>
+                                    <td><span class="status-badge status-available">Available</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-edit"><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>104</td>
+                                    <td>The Great Gatsby</td>
+                                    <td>F. Scott Fitzgerald</td>
+                                    <td>Fiction</td>
+                                    <td><span class="status-badge status-issued">Issued</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-edit"><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>105</td>
+                                    <td>To Kill a Mockingbird</td>
+                                    <td>Harper Lee</td>
+                                    <td>Fiction</td>
+                                    <td><span class="status-badge status-overdue">Overdue</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-edit"><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <table class="recent-table">
-                    <thead>
-                        <tr>
-                            <th>Book Title</th>
-                            <th>Author</th>
-                            <th>Category</th>
-                            <th>Issued Count</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>The Great Gatsby</td>
-                            <td>F. Scott Fitzgerald</td>
-                            <td>Fiction</td>
-                            <td>24</td>
-                        </tr>
-                        <tr>
-                            <td>To Kill a Mockingbird</td>
-                            <td>Harper Lee</td>
-                            <td>Fiction</td>
-                            <td>19</td>
-                        </tr>
-                        <tr>
-                            <td>1984</td>
-                            <td>George Orwell</td>
-                            <td>Science Fiction</td>
-                            <td>17</td>
-                        </tr>
-                        <tr>
-                            <td>Pride and Prejudice</td>
-                            <td>Jane Austen</td>
-                            <td>Romance</td>
-                            <td>15</td>
-                        </tr>
-                        <tr>
-                            <td>The Catcher in the Rye</td>
-                            <td>J.D. Salinger</td>
-                            <td>Fiction</td>
-                            <td>13</td>
-                        </tr>
-                    </tbody>
-                </table>
+                
+                <!-- Student Management -->
+                <div class="tab-content" id="studentManagementTab">
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-user-graduate"></i> Student Management</h2>
+                            <button class="btn btn-primary" id="addStudentBtn">
+                                <i class="fas fa-user-plus"></i> Add Student
+                            </button>
+                        </div>
+                        
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Name</th>
+                                    <th>Roll No</th>
+                                    <th>Books Issued</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>S001</td>
+                                    <td>John Doe</td>
+                                    <td>CS2023001</td>
+                                    <td>3</td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-edit"><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>S002</td>
+                                    <td>Jane Smith</td>
+                                    <td>CS2023002</td>
+                                    <td>2</td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-edit"><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>S003</td>
+                                    <td>Robert Johnson</td>
+                                    <td>CS2023003</td>
+                                    <td>0</td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-edit"><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>S004</td>
+                                    <td>Sarah Williams</td>
+                                    <td>CS2023004</td>
+                                    <td>1</td>
+                                    <td><span class="status-badge status-inactive">Inactive</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-edit"><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>S005</td>
+                                    <td>Michael Brown</td>
+                                    <td>CS2023005</td>
+                                    <td>4</td>
+                                    <td><span class="status-badge status-active">Active</span></td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-edit"><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Issue/Return Management -->
+                <div class="tab-content" id="issueReturnTab">
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-exchange-alt"></i> Issue / Return Management</h2>
+                        </div>
+                        
+                        <div class="tabs">
+                            <div class="tab active" data-subtab="issue">Issue Book</div>
+                            <div class="tab" data-subtab="return">Return Book</div>
+                        </div>
+                        
+                        <!-- Issue Book Tab -->
+                        <div class="tab-content active" id="issueSubTab">
+                            <form id="issueForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="studentId">Student ID</label>
+                                        <input type="text" id="studentId" class="form-control" placeholder="Enter Student ID" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="bookId">Book ID</label>
+                                        <input type="text" id="bookId" class="form-control" placeholder="Enter Book ID" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="issueDate">Issue Date</label>
+                                        <input type="date" id="issueDate" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="dueDate">Due Date</label>
+                                        <input type="date" id="dueDate" class="form-control" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-book-open"></i> Issue Book
+                                    </button>
+                                    <button type="reset" class="btn btn-secondary">
+                                        <i class="fas fa-redo"></i> Reset
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Return Book Tab -->
+                        <div class="tab-content" id="returnSubTab">
+                            <form id="returnForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="returnBookId">Book ID</label>
+                                        <input type="text" id="returnBookId" class="form-control" placeholder="Enter Book ID to return" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="returnDate">Return Date</label>
+                                        <input type="date" id="returnDate" class="form-control" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-primary" id="calculateFineBtn">
+                                        <i class="fas fa-calculator"></i> Calculate Fine
+                                    </button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-check-circle"></i> Complete Return
+                                    </button>
+                                </div>
+                            </form>
+                            
+                            <!-- Fine Calculation Display -->
+                            <div class="fine-display" id="fineDisplay" style="display: none;">
+                                <h4><i class="fas fa-exclamation-triangle"></i> Fine Calculation</h4>
+                                <div class="fine-amount" id="fineAmount">$0.00</div>
+                                <div class="fine-details">
+                                    <p><strong>Book ID:</strong> <span id="fineBookId">-</span></p>
+                                    <p><strong>Due Date:</strong> <span id="fineDueDate">-</span></p>
+                                    <p><strong>Return Date:</strong> <span id="fineReturnDate">-</span></p>
+                                    <p><strong>Days Overdue:</strong> <span id="daysOverdue">0</span> days</p>
+                                    <p><strong>Fine Rate:</strong> $1.00 per day</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Transactions -->
+                    <div class="content-section">
+                        <div class="section-header">
+                            <h2><i class="fas fa-history"></i> Recent Transactions</h2>
+                        </div>
+                        
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Student</th>
+                                    <th>Book</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>T001</td>
+                                    <td>John Doe (CS2023001)</td>
+                                    <td>The C++ Programming Language</td>
+                                    <td>Issue</td>
+                                    <td>2023-10-15</td>
+                                    <td><span class="status-badge status-issued">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>T002</td>
+                                    <td>Jane Smith (CS2023002)</td>
+                                    <td>Clean Code</td>
+                                    <td>Return</td>
+                                    <td>2023-10-14</td>
+                                    <td><span class="status-badge status-available">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>T003</td>
+                                    <td>Michael Brown (CS2023005)</td>
+                                    <td>Design Patterns</td>
+                                    <td>Issue</td>
+                                    <td>2023-10-13</td>
+                                    <td><span class="status-badge status-issued">Active</span></td>
+                                </tr>
+                                <tr>
+                                    <td>T004</td>
+                                    <td>Sarah Williams (CS2023004)</td>
+                                    <td>The Great Gatsby</td>
+                                    <td>Return</td>
+                                    <td>2023-10-12</td>
+                                    <td><span class="status-badge status-available">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td>T005</td>
+                                    <td>Robert Johnson (CS2023003)</td>
+                                    <td>To Kill a Mockingbird</td>
+                                    <td>Issue</td>
+                                    <td>2023-10-10</td>
+                                    <td><span class="status-badge status-overdue">Overdue</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -665,60 +1206,405 @@
             <i class="fas fa-bars"></i>
         </button>
     </div>
+    
+    <!-- Add Book Modal -->
+    <div class="modal" id="addBookModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Add New Book</h3>
+                <button class="modal-close closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addBookForm">
+                    <div class="form-group">
+                        <label for="newBookId">Book ID</label>
+                        <input type="text" id="newBookId" class="form-control" placeholder="Enter Book ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newBookTitle">Book Title</label>
+                        <input type="text" id="newBookTitle" class="form-control" placeholder="Enter Book Title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newBookAuthor">Author</label>
+                        <input type="text" id="newBookAuthor" class="form-control" placeholder="Enter Author Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newBookCategory">Category</label>
+                        <select id="newBookCategory" class="form-control" required>
+                            <option value="">Select Category</option>
+                            <option value="Programming">Programming</option>
+                            <option value="Fiction">Fiction</option>
+                            <option value="Non-Fiction">Non-Fiction</option>
+                            <option value="Science">Science</option>
+                            <option value="History">History</option>
+                            <option value="Biography">Biography</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newBookISBN">ISBN</label>
+                        <input type="text" id="newBookISBN" class="form-control" placeholder="Enter ISBN">
+                    </div>
+                    <div class="form-group">
+                        <label for="newBookCopies">Number of Copies</label>
+                        <input type="number" id="newBookCopies" class="form-control" value="1" min="1" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary cancelModalBtn">Cancel</button>
+                        <button class="btn btn-success saveBookBtn">
+                            <i class="fas fa-save"></i> Save Book
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div class="modal" id="addStudentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Add New Student</h3>
+                <button class="modal-close closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addStudentForm">
+                    <div class="form-group">
+                        <label for="newStudentName">Student Name</label>
+                        <input type="text" id="newStudentName" class="form-control" placeholder="Enter Student Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rollNo">Roll Number</label>
+                        <input type="email" id="newStudentRollNumber" class="form-control" placeholder="Enter Student Roll Number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="newStudentEmail" class="form-control" placeholder="Enter Student Email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bookIds">Book IDs</label>
+                        <input type="text" id="bookIds" class="form-control" placeholder="Enter Book IDs (e.g. 101,102,205)" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary cancelModalBtn">Cancel</button>
+                <button class="btn btn-success" id="saveStudentBtn">
+                    <i class="fas fa-save"></i> Save Book
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Set current date in dashboard
+        // DOM Elements
+        const dashboardSidebar = document.getElementById('dashboardSidebar');
+        const mobileToggle = document.getElementById('mobileToggle');
+        const menuItems = document.querySelectorAll('.menu-item');
+        const tabs = document.querySelectorAll('.tab');
+        const subtabs = document.querySelectorAll('[data-subtab]');
+        const currentDateElement = document.getElementById('currentDate');
+        
+        // Modal Elements
+        const addBookModal = document.getElementById('addBookModal');
+        const addBookBtn = document.getElementById('addBookBtn');
+        const addStudentModal = document.getElementById('addStudentModal');
+        const addStudentBtn = document.getElementById('addStudentBtn')
+        const closeModalBtn = document.getElementsByClassName('closeModalBtn');
+        const cancelModalBtn = document.getElementsByClassName('cancelModalBtn');
+        const saveBookBtn = document.getElementById('saveBookBtn');
+        const saveStudentBtn = document.getElementById('saveStudentBtn');
+        
+        // Issue/Return Elements
+        const calculateFineBtn = document.getElementById('calculateFineBtn');
+        const fineDisplay = document.getElementById('fineDisplay');
+        const fineAmount = document.getElementById('fineAmount');
+        const fineBookId = document.getElementById('fineBookId');
+        const fineDueDate = document.getElementById('fineDueDate');
+        const fineReturnDate = document.getElementById('fineReturnDate');
+        const daysOverdue = document.getElementById('daysOverdue');
+        
+        // Set current date
         function updateCurrentDate() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const currentDate = now.toLocaleDateString('en-US', options);
-            
-            const dateElement = document.getElementById('currentDate');
-            if (dateElement) {
-                dateElement.textContent = currentDate;
-            }
+            currentDateElement.textContent = now.toLocaleDateString('en-US', options);
         }
         
-        // Mobile toggle for sidebar
-        const mobileToggle = document.getElementById('mobileToggle');
-        const dashboardSidebar = document.getElementById('dashboardSidebar');
-        
-        if (mobileToggle) {
-            mobileToggle.addEventListener('click', () => {
-                dashboardSidebar.classList.toggle('active');
+        // Tab navigation
+        menuItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all menu items
+                menuItems.forEach(i => i.classList.remove('active'));
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Get tab to show
+                const tabToShow = this.getAttribute('data-tab');
+                
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Show selected tab
+                document.getElementById(`${tabToShow}Tab`).classList.add('active');
+                
+                // On mobile, close sidebar after clicking
+                if (window.innerWidth <= 992) {
+                    dashboardSidebar.classList.remove('active');
+                }
             });
-        }
+        });
+        document.querySelectorAll('.cancelModalBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        addBookModal.classList.remove('active');
+        addStudentModal.classList.remove('active');
+
+        document.getElementById('addBookForm')?.reset();
+        document.getElementById('addStudentForm')?.reset();
+    });
+});
+
         
-        // Close sidebar when clicking on a menu item (for mobile)
-        document.addEventListener('DOMContentLoaded', function() {
+        // Sub-tab navigation (Issue/Return)
+        subtabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Remove active class from all subtabs
+                subtabs.forEach(t => t.classList.remove('active'));
+                // Add active class to clicked subtab
+                this.classList.add('active');
+                
+                // Get subtab to show
+                const subtabToShow = this.getAttribute('data-subtab');
+                
+                // Hide all subtab contents
+                document.querySelectorAll('#issueReturnTab .tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Show selected subtab
+                document.getElementById(`${subtabToShow}SubTab`).classList.add('active');
+                
+                // Reset fine display when switching to return tab
+                if (subtabToShow === 'return') {
+                    fineDisplay.style.display = 'none';
+                }
+            });
+        });
+        
+        // Mobile sidebar toggle
+        mobileToggle.addEventListener('click', () => {
+            dashboardSidebar.classList.toggle('active');
+        });
+        
+        // Modal functions
+        addBookBtn.addEventListener('click', () => {
+            addBookModal.classList.add('active');
+        });
+
+        addStudentBtn.addEventListener('click', () => {
+            addStudentModal.classList.add('active');
+        });
+        
+        const closeModalBook = () => {
+            addBookModal.classList.remove('active');
+            document.getElementById('addBookForm').reset();
+        };
+
+        const closeModalStudent = () => {
+            addStudentModal.classList.remove('active');
+            document.getElementById('addStudentForm').reset();
+        };
+        // Close buttons (X)
+        Array.from(closeModalBtn).forEach(btn => {
+            btn.addEventListener('click', () => {
+                addBookModal.classList.remove('active');
+                addStudentModal.classList.remove('active');
+
+                document.getElementById('addBookForm')?.reset();
+                document.getElementById('addStudentForm')?.reset();
+            });
+        });
+
+        // Cancel buttons (⚠️ you used SAME ID twice – see note below)
+        Array.from(document.querySelectorAll('#cancelModalBtn')).forEach(btn => {
+            btn.addEventListener('click', () => {
+                addBookModal.classList.remove('active');
+                addStudentModal.classList.remove('active');
+
+                document.getElementById('addBookForm')?.reset();
+                document.getElementById('addStudentForm')?.reset();
+            });
+        });
+
+        
+        // Close modal when clicking outside
+        addBookModal.addEventListener('click', (e) => {
+            if (e.target === addBookModal) {
+                closeModalBook();
+            }
+        });
+        
+        // Save book
+        saveBookBtn.addEventListener('click', () => {
+            const bookId = document.getElementById('newBookId').value;
+            const bookTitle = document.getElementById('newBookTitle').value;
+            const bookAuthor = document.getElementById('newBookAuthor').value;
+            const bookCategory = document.getElementById('newBookCategory').value;
+            
+            if (bookId && bookTitle && bookAuthor && bookCategory) {
+                alert(`Book "${bookTitle}" added successfully!`);
+                closeModalBook();
+                // In a real app, you would add the book to the table here
+            } else {
+                alert('Please fill in all required fields');
+            }
+        });
+        // Save Student
+        saveBookBtn.addEventListener('click', () => {
+            const bookId = document.getElementById('newBookId').value;
+            const bookTitle = document.getElementById('newBookTitle').value;
+            const bookAuthor = document.getElementById('newBookAuthor').value;
+            const bookCategory = document.getElementById('newBookCategory').value;
+            
+            if (bookId && bookTitle && bookAuthor && bookCategory) {
+                alert(`Book "${bookTitle}" added successfully!`);
+                closeModalBook();
+                // In a real app, you would add the book to the table here
+            } else {
+                alert('Please fill in all required fields');
+            }
+        });
+        
+        // Calculate fine
+        calculateFineBtn.addEventListener('click', () => {
+            const bookId = document.getElementById('returnBookId').value;
+            const returnDate = document.getElementById('returnDate').value;
+            
+            if (!bookId || !returnDate) {
+                alert('Please enter Book ID and Return Date');
+                return;
+            }
+            
+            // Mock data - in real app, you would fetch due date from database
+            const dueDate = '2023-10-20'; // Mock due date
+            const returnDateObj = new Date(returnDate);
+            const dueDateObj = new Date(dueDate);
+            
+            // Calculate days overdue
+            const timeDiff = returnDateObj.getTime() - dueDateObj.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            
+            // Calculate fine
+            let fine = 0;
+            if (daysDiff > 0) {
+                fine = daysDiff * 1.00; // $1 per day
+            }
+            
+            // Display fine
+            fineBookId.textContent = bookId;
+            fineDueDate.textContent = dueDate;
+            fineReturnDate.textContent = returnDate;
+            daysOverdue.textContent = daysDiff > 0 ? daysDiff : 0;
+            fineAmount.textContent = `$${fine.toFixed(2)}`;
+            
+            fineDisplay.style.display = 'block';
+        });
+        
+        // Form submissions
+        document.getElementById('issueForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const studentId = document.getElementById('studentId').value;
+            const bookId = document.getElementById('bookId').value;
+            
+            if (studentId && bookId) {
+                alert(`Book ${bookId} issued to Student ${studentId} successfully!`);
+                this.reset();
+                
+                // Set default dates
+                const today = new Date();
+                const dueDate = new Date(today);
+                dueDate.setDate(today.getDate() + 14); // 14 days from today
+                
+                document.getElementById('issueDate').value = today.toISOString().split('T')[0];
+                document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+            }
+        });
+        
+        document.getElementById('returnForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const bookId = document.getElementById('returnBookId').value;
+            
+            if (bookId) {
+                alert(`Book ${bookId} returned successfully!`);
+                this.reset();
+                fineDisplay.style.display = 'none';
+            }
+        });
+        
+        // Set default dates for issue form
+        window.addEventListener('load', () => {
             updateCurrentDate();
             
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    // Remove active class from all items
-                    menuItems.forEach(i => i.classList.remove('active'));
-                    // Add active class to clicked item
-                    this.classList.add('active');
-                    
-                    // On mobile, close sidebar after clicking
-                    if (window.innerWidth <= 992) {
-                        dashboardSidebar.classList.remove('active');
-                    }
+            // Set default dates for issue form
+            const today = new Date();
+            const dueDate = new Date(today);
+            dueDate.setDate(today.getDate() + 14); // 14 days from today
+            
+            document.getElementById('issueDate').value = today.toISOString().split('T')[0];
+            document.getElementById('dueDate').value = dueDate.toISOString().split('T')[0];
+            document.getElementById('returnDate').value = today.toISOString().split('T')[0];
+            
+            // Add click handlers for edit/delete buttons
+            document.querySelectorAll('.action-edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const bookId = row.cells[0].textContent;
+                    const bookName = row.cells[1].textContent;
+                    alert(`Edit book: ${bookName} (ID: ${bookId})`);
                 });
             });
             
-            // Logout functionality
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (confirm('Are you sure you want to logout?')) {
-                        alert('Logged out successfully!');
-                        // In a real application, you would redirect to login page
-                        // window.location.href = 'login.html';
+            document.querySelectorAll('.action-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const row = this.closest('tr');
+                    const bookId = row.cells[0].textContent;
+                    const bookName = row.cells[1].textContent;
+                    
+                    if (confirm(`Are you sure you want to delete "${bookName}" (ID: ${bookId})?`)) {
+                        alert(`Book "${bookName}" deleted successfully!`);
+                        // In a real app, you would remove the row from the table
                     }
                 });
+            });
+        });
+        
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 992 && 
+                !dashboardSidebar.contains(e.target) && 
+                !mobileToggle.contains(e.target) &&
+                dashboardSidebar.classList.contains('active')) {
+                dashboardSidebar.classList.remove('active');
+            }
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl + B to add book
+            if (e.ctrlKey && e.key === 'b') {
+                e.preventDefault();
+                addBookModal.classList.add('active');
+            }
+            
+            // Esc to close modal
+            if (e.key === 'Escape') {
+                if (addBookModal.classList.contains('active')) {
+                    closeModalBook();
+                }
             }
         });
     </script>
