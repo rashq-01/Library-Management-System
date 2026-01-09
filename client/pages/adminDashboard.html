@@ -142,7 +142,6 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Book ID</th>
                                     <th>Name</th>
                                     <th>Author</th>
                                     <th>Category</th>
@@ -152,7 +151,6 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>101</td>
                                     <td>The C++ Programming Language</td>
                                     <td>Bjarne Stroustrup</td>
                                     <td>Programming</td>
@@ -165,7 +163,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>102</td>
                                     <td>Clean Code</td>
                                     <td>Robert C. Martin</td>
                                     <td>Programming</td>
@@ -178,7 +175,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>103</td>
                                     <td>Design Patterns</td>
                                     <td>Erich Gamma</td>
                                     <td>Programming</td>
@@ -191,7 +187,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>104</td>
                                     <td>The Great Gatsby</td>
                                     <td>F. Scott Fitzgerald</td>
                                     <td>Fiction</td>
@@ -204,7 +199,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>105</td>
                                     <td>To Kill a Mockingbird</td>
                                     <td>Harper Lee</td>
                                     <td>Fiction</td>
@@ -234,7 +228,6 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Student ID</th>
                                     <th>Name</th>
                                     <th>Roll No</th>
                                     <th>Books Issued</th>
@@ -244,7 +237,6 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>S001</td>
                                     <td>John Doe</td>
                                     <td>CS2023001</td>
                                     <td>3</td>
@@ -257,7 +249,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>S002</td>
                                     <td>Jane Smith</td>
                                     <td>CS2023002</td>
                                     <td>2</td>
@@ -270,7 +261,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>S003</td>
                                     <td>Robert Johnson</td>
                                     <td>CS2023003</td>
                                     <td>0</td>
@@ -282,9 +272,7 @@
                                         </div>
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>S004</td>
-                                    <td>Sarah Williams</td>
+                                <tr>                                    <td>Sarah Williams</td>
                                     <td>CS2023004</td>
                                     <td>1</td>
                                     <td><span class="status-badge status-inactive">Inactive</span></td>
@@ -296,7 +284,6 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>S005</td>
                                     <td>Michael Brown</td>
                                     <td>CS2023005</td>
                                     <td>4</td>
@@ -480,12 +467,12 @@
             <div class="modal-body">
                 <form id="addBookForm">
                     <div class="form-group">
-                        <label for="newBookId">Book ID</label>
-                        <input type="text" id="newBookId" class="form-control" placeholder="Enter Book ID" required>
-                    </div>
-                    <div class="form-group">
                         <label for="newBookTitle">Book Title</label>
                         <input type="text" id="newBookTitle" class="form-control" placeholder="Enter Book Title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="isbnNO">ISBN</label>
+                        <input type="number" id="isbnNO" class="form-control" placeholder="Enter ISBN Number" required>
                     </div>
                     <div class="form-group">
                         <label for="newBookAuthor">Author</label>
@@ -501,14 +488,39 @@
                             <option value="Science">Science</option>
                             <option value="History">History</option>
                             <option value="Biography">Biography</option>
+                            <option value="Biography">Other</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="newBookISBN">ISBN</label>
-                        <input type="text" id="newBookISBN" class="form-control" placeholder="Enter ISBN">
+                        <label for="publisher">Publisher Name</label>
+                        <input type="text" id="publisher" class="form-control" placeholder="Enter Publisher Name">
                     </div>
                     <div class="form-group">
-                        <label for="newBookCopies">Number of Copies</label>
+                        <label for="publishedYear">Publisher Year</label>
+                        <input type="text" id="publishedYear" class="form-control" placeholder="Enter Published Date">
+                    </div>
+                    <div class="form-group">
+                        <label for="edition">Edition</label>
+                        <input type="text" id="edition" class="form-control" placeholder="Enter Edition">
+                    </div>
+                    <div class="form-group">
+                        <label for="page">Number of Pages</label>
+                        <input type="number" id="page" class="form-control" placeholder="Enter Number of Pages">
+                    </div>
+                    <div class="form-group">
+                        <label for="language">Language</label>
+                        <input type="text" id="language" class="form-control" placeholder="Enter Language">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" class="form-control" placeholder="Enter Location">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="textarea" id="description" class="form-control" placeholder="Enter Description">
+                    </div>
+                    <div class="form-group">
+                        <label for="totalCopies">Number of Copies</label>
                         <input type="number" id="newBookCopies" class="form-control" value="1" min="1" required>
                     </div>
                     <div class="modal-footer">
@@ -545,8 +557,8 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="bookIds">Book IDs</label>
-                        <input type="text" id="bookIds" class="form-control" placeholder="Enter Book IDs (e.g. 101,102,205)" required>
+                        <label for="isbn">Book ISBN Number</label>
+                        <input type="number" id="isbn" class="form-control" placeholder="Enter Book ISBN Number" required>
                     </div>
                 </form>
             </div>
