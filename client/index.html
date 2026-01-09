@@ -20,25 +20,24 @@
                 <i class="fas fa-bars"></i>
             </div>
             <ul class="nav-links" id="navLinks">
-                <li><a href="#" class="active">Home</a></li>
-                <li><a href="#">Books</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Contact</a></li>
-                <li><a href="#">Login</a></li>
-                <li><a href="#" class="btn btn-primary">Register</a></li>
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="/client/pages/books.html">Book Catalog</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="/client/pages/login.html">Login</a></li>
+                <li><a href="/client/pages/register.html" class="btn btn-primary">Register</a></li>
             </ul>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" id="home">
         <div class="container hero-content">
             <div class="hero-text">
                 <h1>Library Management System</h1>
                 <p>Manage books, students & records digitally with our comprehensive library management solution. Streamline operations, track inventory, and enhance user experience.</p>
                 <div class="hero-buttons">
-                    <a href="#" class="btn btn-primary">Login</a>
-                    <a href="#" class="btn btn-secondary">Register</a>
+                    <a href="/client/pages/login.html" class="btn btn-primary">Login</a>
+                    <a href="/client/pages/register.html" class="btn btn-secondary">Register</a>
                 </div>
             </div>
             <div class="hero-image">
@@ -188,7 +187,7 @@
     </section>
 
     <!-- Footer -->
-    <footer>
+    <footer id="about">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-column">
@@ -207,8 +206,8 @@
                 <div class="footer-column">
                     <h3>Quick Links</h3>
                     <ul class="footer-links">
-                        <li><a href="#">Home</a></li>
-                        <li><a href="#">Books Catalog</a></li>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="/client/pages/books.html">Books Catalog</a></li>
                         <li><a href="#">About Us</a></li>
                         <li><a href="#">Contact Us</a></li>
                         <li><a href="#">Privacy Policy</a></li>
