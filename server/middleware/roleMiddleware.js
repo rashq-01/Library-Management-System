@@ -11,7 +11,7 @@ function roleMiddleware(requiredRole){
         if(req.user.role != requiredRole){
             return res.status(403).json({
                 success : false,
-                message : "Access Denied"
+                message : "Access Denied. Admin Only"
             });
         }
 
