@@ -10,17 +10,16 @@ async function registerUser(req, res) {
     //Fetching all requests
     const { fullName, rollNumber, email, role, password } = req.body;
 
-    //Checking null
+
     if (!fullName || !rollNumber || !email || !role || !password) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
       });
     }
-    // Getting User from DB
+
     const User = await user.findOne({ email });
 
-    // Checking Existing User
     if (User) {
       return res.status(409).json({
         success: false,
