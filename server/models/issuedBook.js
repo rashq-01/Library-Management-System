@@ -2,11 +2,20 @@ const mongoose = require("mongoose");
 
 const issuedBook = new mongoose.Schema(
     {
-        userId : {
-            type : mongoose.Schema.Types.ObjectId,
-            ref : "user",
+        fullName : {
+            type : String,
+            trim : true,
             required : true
-
+        },
+        rollNumber : {
+            type : String,
+            trim : true,
+            required : true
+        },
+        email : {
+            type  : String,
+            trim : true,
+            required : true
         },
         bookId : {
             type : mongoose.Schema.Types.ObjectId,
