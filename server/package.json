@@ -4,7 +4,7 @@
   "description": "This is my full-stack project.",
   "main": "server.js",
   "scripts": {
-    "test": "nodmon server.js",
+    "test": "nodemon server.js",
     "start": "node server.js"
   },
   "repository": {
