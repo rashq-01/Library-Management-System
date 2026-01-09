@@ -9,13 +9,9 @@ const currentDateElement = document.getElementById("currentDate");
 // Modal Elements
 const addBookModal = document.getElementById("addBookModal");
 const addBookBtn = document.getElementById("addBookBtn");
-const addStudentModal = document.getElementById("addStudentModal");
-const addStudentBtn = document.getElementById("addStudentBtn");
 const closeModalBtn = document.getElementsByClassName("closeModalBtn");
 const cancelModalBtn = document.getElementsByClassName("cancelModalBtn");
 const saveBookBtn = document.getElementById("saveBookBtn");
-const saveStudentBtn = document.getElementById("saveStudentBtn");
-
 // Issue/Return Elements
 const calculateFineBtn = document.getElementById("calculateFineBtn");
 const fineDisplay = document.getElementById("fineDisplay");
@@ -67,10 +63,8 @@ menuItems.forEach((item) => {
 document.querySelectorAll(".cancelModalBtn").forEach((btn) => {
   btn.addEventListener("click", () => {
     addBookModal.classList.remove("active");
-    addStudentModal.classList.remove("active");
 
     document.getElementById("addBookForm")?.reset();
-    document.getElementById("addStudentForm")?.reset();
   });
 });
 
@@ -110,27 +104,17 @@ addBookBtn.addEventListener("click", () => {
   addBookModal.classList.add("active");
 });
 
-addStudentBtn.addEventListener("click", () => {
-  addStudentModal.classList.add("active");
-});
 
 const closeModalBook = () => {
   addBookModal.classList.remove("active");
   document.getElementById("addBookForm").reset();
 };
 
-const closeModalStudent = () => {
-  addStudentModal.classList.remove("active");
-  document.getElementById("addStudentForm").reset();
-};
 // Close buttons (X)
 Array.from(closeModalBtn).forEach((btn) => {
   btn.addEventListener("click", () => {
     addBookModal.classList.remove("active");
-    addStudentModal.classList.remove("active");
-
     document.getElementById("addBookForm")?.reset();
-    document.getElementById("addStudentForm")?.reset();
   });
 });
 
@@ -138,10 +122,7 @@ Array.from(closeModalBtn).forEach((btn) => {
 Array.from(document.querySelectorAll("#cancelModalBtn")).forEach((btn) => {
   btn.addEventListener("click", () => {
     addBookModal.classList.remove("active");
-    addStudentModal.classList.remove("active");
-
     document.getElementById("addBookForm")?.reset();
-    document.getElementById("addStudentForm")?.reset();
   });
 });
 
@@ -153,21 +134,6 @@ addBookModal.addEventListener("click", (e) => {
 });
 
 // Save book
-saveBookBtn.addEventListener("click", () => {
-  const bookId = document.getElementById("newBookId").value;
-  const bookTitle = document.getElementById("newBookTitle").value;
-  const bookAuthor = document.getElementById("newBookAuthor").value;
-  const bookCategory = document.getElementById("newBookCategory").value;
-
-  if (bookId && bookTitle && bookAuthor && bookCategory) {
-    alert(`Book "${bookTitle}" added successfully!`);
-    closeModalBook();
-    // In a real app, you would add the book to the table here
-  } else {
-    alert("Please fill in all required fields");
-  }
-});
-// Save Student
 saveBookBtn.addEventListener("click", () => {
   const bookId = document.getElementById("newBookId").value;
   const bookTitle = document.getElementById("newBookTitle").value;
@@ -216,30 +182,6 @@ calculateFineBtn.addEventListener("click", () => {
   fineAmount.textContent = `$${fine.toFixed(2)}`;
 
   fineDisplay.style.display = "block";
-});
-
-// Form submissions
-document.getElementById("issueForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-  const studentId = document.getElementById("studentId").value;
-  const bookId = document.getElementById("bookId").value;
-
-  if (studentId && bookId) {
-    alert(`Book ${bookId} issued to Student ${studentId} successfully!`);
-    this.reset();
-
-    // Set default dates
-    const today = new Date();
-    const dueDate = new Date(today);
-    dueDate.setDate(today.getDate() + 14); // 14 days from today
-
-    document.getElementById("issueDate").value = today
-      .toISOString()
-      .split("T")[0];
-    document.getElementById("dueDate").value = dueDate
-      .toISOString()
-      .split("T")[0];
-  }
 });
 
 document.getElementById("returnForm").addEventListener("submit", function (e) {

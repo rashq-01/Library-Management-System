@@ -216,17 +216,6 @@ function loadBooks(filteredBooks = books) {
                         ${book.description}
                     </p>
                     <div class="book-actions">
-                        <button class="btn btn-outline ${
-                          book.status === "issued" ? "disabled" : ""
-                        }" 
-                                ${book.status === "issued" ? "disabled" : ""}
-                                onclick="issueBook(${book.id})">
-                            <i class="fas fa-book-open"></i> ${
-                              book.status === "issued"
-                                ? "Already Issued"
-                                : "Issue Book"
-                            }
-                        </button>
                         <button class="btn btn-outline" onclick="viewBookDetails(${
                           book.id
                         })">
@@ -290,13 +279,6 @@ function loadIssuedBooks() {
                     <td>${dueDate.toLocaleDateString()}</td>
                     <td class="${statusClass}">${statusText}</td>
                     <td class="${fineClass}">${fineText}</td>
-                    <td>
-                        <button class="btn btn-primary" style="padding: 5px 10px; font-size: 0.85rem;" onclick="returnBook(${
-                          book.id
-                        })">
-                            <i class="fas fa-undo-alt"></i> Return
-                        </button>
-                    </td>
                 `;
 
     issuedBooksTable.appendChild(row);
