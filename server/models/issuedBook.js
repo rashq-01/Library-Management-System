@@ -1,0 +1,41 @@
+const mongoose = require("mongoose");
+
+const issuedBook = new mongoose.Schema(
+    {
+        userId : {
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "user",
+            required : true
+
+        },
+        bookId : {
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "book",
+            required : true
+
+        },
+        issueDate : {
+            type : Date,
+            required : true,
+            default : Date.now
+        },
+        dueDate : {
+            type : Date,
+            required : true,
+        },
+        returnDate : {
+            type : Date,
+            default : null
+        },
+        fine : {
+            type : Number,
+            default : 0,
+            min : 0
+        }
+    },
+    {
+        timestamps : true
+    }
+);
+
+module.exports = mongoose.model("issuedBook",issuedBook);
