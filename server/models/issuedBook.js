@@ -5,9 +5,13 @@ const issuedBook = new mongoose.Schema(
         fullName : {
             type : String,
             trim : true,
-            required : true
         },
         rollNumber : {
+            type : String,
+            trim : true,
+            required : true
+        },
+        ISBNNumber : {
             type : String,
             trim : true,
             required : true
@@ -25,7 +29,6 @@ const issuedBook = new mongoose.Schema(
         },
         issueDate : {
             type : Date,
-            required : true,
             default : Date.now
         },
         dueDate : {
