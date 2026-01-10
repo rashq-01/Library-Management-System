@@ -22,7 +22,7 @@ async function issueBook(req,res){
         });
       }
 
-      const alreadyUser = await issuedBook.findOne({ISBNNumber,ISBNNumber,returnDate:null});
+      const alreadyUser = await issuedBook.findOne({ISBNNumber,rollNumber,returnDate:null});
 
       if(alreadyUser){
         return res.status(409).json({
@@ -74,33 +74,40 @@ async function returnBook(req,res){
       });
     }
 
-    const ISSUEDBOOk = await issueBook.findOne({ISBNNumber,rollNumber});
+    const ISSUEDBOOk = await issuedBook.findOne({ISBNNumber,rollNumber, returnDate:null});
 
     if(!ISSUEDBOOk){
       return res.status(404).json({
-        success : true,
+        success : false,
         message : "Issued Book not found."
       });
     }
-    if(!ISSUEDBOOk.returnDate){
+    if(ISSUEDBOOk.returnDate != null){
       return res.status(409).json({
         success : false,
         message : "Book already returned"
       });
     }
-    ISSUEDBOOk.returnDate = new Date();
+    const BOOK = await book.findOne({ISBNNumber});
 
+    if(BOOK.issuedCopies>0){
+      BOOK.issuedCopies = BOOK.issuedCopies - 1;
+    }else{
+      return res.status(404).json({
+        success : false,
+        message : "Book is not available"
+      });
+    }
+    ISSUEDBOOk.returnDate = new Date();
+    ISSUEDBOOk.fine = 0;
     if(ISSUEDBOOk.returnDate > ISSUEDBOOk.dueDate){
-      lateDays = ISSUEDBOOk.returnDate-ISSUEDBOOk.dueDate;
-      lateDays = lateDays/(1000*60*60*24);
+      let lateDays = ISSUEDBOOk.returnDate-ISSUEDBOOk.dueDate;
+      lateDays = Math.ceil(lateDays/(1000*60*60*24));
       ISSUEDBOOk.fine = lateDays * 30; //Fine Rs.30 per day
     }
     await ISSUEDBOOk.save();
 
 
-    BOOK = await book.findOne({ISBNNumber});
-
-    BOOK.issuedCopies = BOOK.issuedCopies - 1;
 
     await BOOK.save();
 
@@ -124,8 +131,31 @@ async function returnBook(req,res){
 
 
 
+async function getMyIssuedBooks(req,res){
+  try{
+    const rollNumber = req.body.rollNumber;
+    
+    const ISSUEDBOOKs = await issuedBook.findOne({rollNumber});
+
+    return res.status(200).json({
+      success : true,
+      message : "Issued Book loaded.",
+      totalIssuedBooks : ISSUEDBOOKs.length,
+      ISSUEDBOOKs : ISSUEDBOOKs
+    });
+    
+  }
+  catch(err){
+    console.error(err);
+    return res.status(500).json({
+      success : false,
+      message : err.message
+    });
+  }
+}
 
 
 
 
-module.exports = {issueBook};
+
+module.exports = {issueBook,returnBook,getMyIssuedBooks};
