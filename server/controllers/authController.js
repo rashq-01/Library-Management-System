@@ -8,7 +8,7 @@ const SECRET_KEY = process.env.SECRET_KEY;
 async function registerUser(req, res) {
   try {
     //Fetching all requests
-    const { fullName, rollNumber, email, password } = req.body;
+    const { fullName, rollNumber, email, password, confirmPassword} = req.body;
 
 
     if (!fullName || !rollNumber || !email || !password ||!confirmPassword) {
@@ -41,7 +41,7 @@ async function registerUser(req, res) {
       fullName: fullName,
       rollNumber: rollNumber,
       email: email,
-      role: "stuedent",
+      role: "student",
       password: hashPassword,
     });
 
@@ -94,7 +94,7 @@ async function login(req, res) {
         role: User.role,
       },
       SECRET_KEY,
-      { expiresIn: "1m" }
+      { expiresIn: "60m" }
     );
 
     return res.status(200).json({

@@ -1,8 +1,8 @@
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 function auth(req,res,next){
     const authHeader = req.headers.authorization;
-
     if(!authHeader){
         console.log("No Token Provided");
         return res.status(401).json({
@@ -20,7 +20,8 @@ function auth(req,res,next){
     const token = authHeader.split(" ")[1];
 
     try {
-        const decoded = jwt.verify(token,process.env.SECRET_KEY);
+        const SECRET_KEY = process.env.SECRET_KEY;
+        const decoded = jwt.verify(token,SECRET_KEY);
         console.log(decoded);
         req.user = decoded;
         next();
