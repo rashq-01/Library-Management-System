@@ -10,6 +10,12 @@ function auth(req,res,next){
             message : "No Token Provided"
         })
     }
+    if(!authHeader.startsWith("Bearer ")){
+        return res.status(401).json({
+        success: false,
+        message: "Invalid authorization format"
+        });
+    }
 
     const token = authHeader.split(" ")[1];
 

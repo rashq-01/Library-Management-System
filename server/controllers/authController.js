@@ -8,13 +8,20 @@ const SECRET_KEY = process.env.SECRET_KEY;
 async function registerUser(req, res) {
   try {
     //Fetching all requests
-    const { fullName, rollNumber, email, role, password } = req.body;
+    const { fullName, rollNumber, email, password } = req.body;
 
 
-    if (!fullName || !rollNumber || !email || !role || !password) {
+    if (!fullName || !rollNumber || !email || !password ||!confirmPassword) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
+      });
+    }
+
+    if(password != confirmPassword){
+      return res.status(409).json({
+        success : false,
+        message : "Password do not matched."
       });
     }
 
@@ -34,7 +41,7 @@ async function registerUser(req, res) {
       fullName: fullName,
       rollNumber: rollNumber,
       email: email,
-      role: role,
+      role: "stuedent",
       password: hashPassword,
     });
 
