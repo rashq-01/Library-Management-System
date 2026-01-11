@@ -82,16 +82,10 @@ async function returnBook(req,res){
         message : "Issued Book not found."
       });
     }
-    if(ISSUEDBOOk.returnDate != null){
-      return res.status(409).json({
-        success : false,
-        message : "Book already returned"
-      });
-    }
     const BOOK = await book.findOne({ISBNNumber});
 
     if(BOOK.issuedCopies>0){
-      BOOK.issuedCopies = BOOK.issuedCopies - 1;
+      BOOK.issuedCopies -= 1;
     }else{
       return res.status(404).json({
         success : false,
@@ -135,7 +129,7 @@ async function getMyIssuedBooks(req,res){
   try{
     const rollNumber = req.body.rollNumber;
     
-    const ISSUEDBOOKs = await issuedBook.findOne({rollNumber});
+    const ISSUEDBOOKs = await issuedBook.find({rollNumber,returnDate : null});
 
     return res.status(200).json({
       success : true,
