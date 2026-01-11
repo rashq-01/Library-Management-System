@@ -19,7 +19,6 @@ const issuedBook = new mongoose.Schema(
         email : {
             type  : String,
             trim : true,
-            required : true
         },
         bookId : {
             type : mongoose.Schema.Types.ObjectId,

@@ -6,7 +6,7 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 const userRouter = express.Router();
 
 userRouter.get("/me",auth,getMyProfile);
-userRouter.put("/me",auth,updateProfile);
+userRouter.put("/update",auth,updateProfile);
 userRouter.get("/all",auth,roleMiddleware("admin"),getAllUser);
 
 
