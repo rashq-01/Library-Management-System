@@ -50,4 +50,10 @@ const issuedBook = new mongoose.Schema(
     }
 );
 
+issuedBook.index({
+    ISBNNumber : 1,
+    rollNumber : 1,
+    returnDate : 1
+})
+
 module.exports = mongoose.model("issuedBook",issuedBook);
