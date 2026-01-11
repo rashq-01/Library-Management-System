@@ -1,7 +1,7 @@
 const book = require("../models/book")
 async function addBook(req,res){
     try{
-        if (req.user.role != "admin") {
+        if (req.user.role.toLowerCase() != "admin") {
             return res.status(403).json({
             success: false,
             message: "Access denied. Admin only.",

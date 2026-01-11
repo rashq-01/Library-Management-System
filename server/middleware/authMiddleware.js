@@ -22,7 +22,6 @@ function auth(req,res,next){
     try {
         const SECRET_KEY = process.env.SECRET_KEY;
         const decoded = jwt.verify(token,SECRET_KEY);
-        console.log(decoded);
         req.user = decoded;
         next();
     } catch (err) {
