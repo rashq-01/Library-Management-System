@@ -1,3 +1,5 @@
+const PORT = 5000;
+
 // DOM Elements
 const dashboardSidebar = document.getElementById("dashboardSidebar");
 const mobileToggle = document.getElementById("mobileToggle");
@@ -20,6 +22,7 @@ const fineBookId = document.getElementById("fineBookId");
 const fineDueDate = document.getElementById("fineDueDate");
 const fineReturnDate = document.getElementById("fineReturnDate");
 const daysOverdue = document.getElementById("daysOverdue");
+const returnDateInput = document.getElementById("returnDate");
 
 // Set current date
 function updateCurrentDate() {
@@ -104,7 +107,6 @@ addBookBtn.addEventListener("click", () => {
   addBookModal.classList.add("active");
 });
 
-
 const closeModalBook = () => {
   addBookModal.classList.remove("active");
   document.getElementById("addBookForm").reset();
@@ -133,56 +135,81 @@ addBookModal.addEventListener("click", (e) => {
   }
 });
 
-// Save book
-saveBookBtn.addEventListener("click", () => {
-  const bookId = document.getElementById("newBookId").value;
-  const bookTitle = document.getElementById("newBookTitle").value;
-  const bookAuthor = document.getElementById("newBookAuthor").value;
-  const bookCategory = document.getElementById("newBookCategory").value;
+// Save book  // API call
+saveBookBtn.addEventListener("click", async () => {
+  try {
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (!token) {
+      alert("Unauthorized. Please Login");
+      window.location.href = "/pages/login.html";
+      return;
+    }
+    const response = await fetch(`http://localhost:${PORT}/api/addBook`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      // title,ISBNNumber,author,category,publisher,publishedYear,edition,pages,language,location,description,totalCopies
+      body: JSON.stringify({
+        title: document.getElementById("newBookTitle").value.trim(),
+        ISBNNumber: document.getElementById("isbnNo").value.trim(),
+        author: document.getElementById("newBookAuthor").value.trim(),
+        category: document.getElementById("newBookCategory").value.trim(),
+        publisher: document.getElementById("publisher").value.trim(),
+        publishedYear: Number(document.getElementById("publishedYear").value),
+        edition: document.getElementById("edition").value.trim(),
+        pages: Number(document.getElementById("page").value),
+        language: document.getElementById("language").value.trim(),
+        location: document.getElementById("location").value.trim(),
+        description: document.getElementById("description").value.trim(),
+        totalCopies: Number(document.getElementById("newBookCopies").value),
+      }),
+    });
 
-  if (bookId && bookTitle && bookAuthor && bookCategory) {
-    alert(`Book "${bookTitle}" added successfully!`);
-    closeModalBook();
-    // In a real app, you would add the book to the table here
-  } else {
-    alert("Please fill in all required fields");
+    const data = await response.json();
+    console.log(data);
+    alert(data.message);
+  } catch (err) {
+    console.error(err.message);
   }
 });
 
-// Calculate fine
-calculateFineBtn.addEventListener("click", () => {
-  const bookId = document.getElementById("returnBookId").value;
-  const returnDate = document.getElementById("returnDate").value;
+// // Calculate fine
+// calculateFineBtn.addEventListener("click", () => {
+//   const bookId = document.getElementById("returnBookId").value;
+//   const returnDate = document.getElementById("returnDate").value;
 
-  if (!bookId || !returnDate) {
-    alert("Please enter Book ID and Return Date");
-    return;
-  }
+//   if (!bookId || !returnDate) {
+//     alert("Please enter Book ID and Return Date");
+//     return;
+//   }
 
-  // Mock data - in real app, you would fetch due date from database
-  const dueDate = "2023-10-20"; // Mock due date
-  const returnDateObj = new Date(returnDate);
-  const dueDateObj = new Date(dueDate);
+//   // Mock data - in real app, you would fetch due date from database
+//   const dueDate = "2023-10-20"; // Mock due date
+//   const returnDateObj = new Date(returnDate);
+//   const dueDateObj = new Date(dueDate);
 
-  // Calculate days overdue
-  const timeDiff = returnDateObj.getTime() - dueDateObj.getTime();
-  const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+//   // Calculate days overdue
+//   const timeDiff = returnDateObj.getTime() - dueDateObj.getTime();
+//   const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-  // Calculate fine
-  let fine = 0;
-  if (daysDiff > 0) {
-    fine = daysDiff * 1.0; // $1 per day
-  }
+//   // Calculate fine
+//   let fine = 0;
+//   if (daysDiff > 0) {
+//     fine = daysDiff * 1.0; // $1 per day
+//   }
 
-  // Display fine
-  fineBookId.textContent = bookId;
-  fineDueDate.textContent = dueDate;
-  fineReturnDate.textContent = returnDate;
-  daysOverdue.textContent = daysDiff > 0 ? daysDiff : 0;
-  fineAmount.textContent = `$${fine.toFixed(2)}`;
+//   // Display fine
+//   fineBookId.textContent = bookId;
+//   fineDueDate.textContent = dueDate;
+//   fineReturnDate.textContent = returnDate;
+//   daysOverdue.textContent = daysDiff > 0 ? daysDiff : 0;
+//   fineAmount.textContent = `$${fine.toFixed(2)}`;
 
-  fineDisplay.style.display = "block";
-});
+//   fineDisplay.style.display = "block";
+// });
 
 document.getElementById("returnForm").addEventListener("submit", function (e) {
   e.preventDefault();
@@ -204,15 +231,9 @@ window.addEventListener("load", () => {
   const dueDate = new Date(today);
   dueDate.setDate(today.getDate() + 14); // 14 days from today
 
-  document.getElementById("issueDate").value = today
-    .toISOString()
-    .split("T")[0];
-  document.getElementById("dueDate").value = dueDate
-    .toISOString()
-    .split("T")[0];
-  document.getElementById("returnDate").value = today
-    .toISOString()
-    .split("T")[0];
+  if (returnDateInput) {
+    returnDateInput.value = today.toISOString().split("T")[0];
+  }
 
   // Add click handlers for edit/delete buttons
   document.querySelectorAll(".action-edit").forEach((btn) => {

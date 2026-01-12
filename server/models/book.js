@@ -70,10 +70,4 @@ const bookSchema = new mongoose.Schema(
     }
 );
 
-
-bookSchema.index({
-    ISBNNumber:1,
-})
-
-
 module.exports = mongoose.model("book",bookSchema);

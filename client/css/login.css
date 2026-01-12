@@ -77,7 +77,13 @@ body {
   opacity: 0.9;
   font-size: 0.95rem;
 }
+#msgBox{
+  position: relative;
+  text-align: center;
+  color: var(--error);
+  top: -20px;
 
+}
 .auth-body {
   padding: 40px 30px;
 }

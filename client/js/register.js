@@ -183,7 +183,7 @@ confirmPasswordInput.addEventListener("blur", () => {
 });
 
 // Form submission
-registerForm.addEventListener("submit", function (e) {
+registerForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   let isValid = true;
@@ -247,55 +247,42 @@ registerForm.addEventListener("submit", function (e) {
 
   // If valid, submit form
   if (isValid) {
-    // Simulate registration process
+    // Calling backend register APIs
     const originalText = registerBtn.textContent;
     registerBtn.textContent = "Creating account...";
     registerBtn.disabled = true;
+    try{
+      const response = await fetch("http://localhost:5000/api/register",{
+        method : "POST",
+        headers : {
+          "Content-Type": "application/json"
+        },
+        body : JSON.stringify({
+          // fullName, rollNumber, email, password, confirmPassword
+          fullName : fullNameInput.value.trim(),
+          rollNumber : rollNoInput.value.trim(),
+          email : emailInput.value.trim(),
+          password : passwordInput.value.trim(),
+          confirmPassword : confirmPasswordInput.value.trim()
+        })
+      });
 
-    // Simulate API call
-    setTimeout(() => {
-      // In a real application, you would send data to server here
-      const userData = {
-        name: fullNameInput.value,
-        rollNo: rollNoInput.value,
-        email: emailInput.value,
-        password: passwordInput.value,
-        role: "student",
-      };
+      const data = await response.json();
 
-      // Save to localStorage for demo purposes
-      localStorage.setItem("libraTechUser", JSON.stringify(userData));
-
-      alert(
-        `Registration successful! Welcome ${fullNameInput.value}. You can now login.`
-      );
-
-      // Redirect to login page
-      window.location.href = "login.htm";
-
+      if(!data.success){
+        alert(data.message);
+        return;
+      }
+      alert(data.message);
+      window.location.href = "/pages/login.html";
+    }
+    catch(err){
+      alert(err.message);
+      return;
+    }
+    finally{
       registerBtn.textContent = originalText;
       registerBtn.disabled = false;
-    }, 2000);
-  }
-});
-
-// Pre-fill form for demo purposes (remove in production)
-window.addEventListener("load", () => {
-  // Only pre-fill if there's no data in form
-  if (!fullNameInput.value) {
-    fullNameInput.value = "";
-    rollNoInput.value = "";
-    emailInput.value = "";
-    passwordInput.value = "";
-    confirmPasswordInput.value = "";
-    termsCheckbox.checked = true;
-
-    // Trigger validation for all fields
-    updatePasswordStrength(passwordInput.value);
-    showSuccess(fullNameInput, nameError);
-    showSuccess(rollNoInput, rollNoError);
-    showSuccess(emailInput, emailError);
-    showSuccess(passwordInput, passwordError);
-    showSuccess(confirmPasswordInput, confirmPasswordError);
+    }
   }
 });

@@ -67,82 +67,82 @@ mobileToggle.addEventListener("click", () => {
   dashboardSidebar.classList.toggle("active");
 });
 
-// Book data
-const books = [
-  {
-    id: 1,
-    title: "The C++ Programming Language",
-    author: "Bjarne Stroustrup",
-    category: "Programming",
-    isbn: "978-0321563842",
-    status: "available",
-    description: "A comprehensive reference and tutorial for C++ programmers.",
-  },
-  {
-    id: 2,
-    title: "Clean Code",
-    author: "Robert C. Martin",
-    category: "Programming",
-    isbn: "978-0132350884",
-    status: "issued",
-    description: "A handbook of agile software craftsmanship.",
-  },
-  {
-    id: 3,
-    title: "Design Patterns",
-    author: "Erich Gamma",
-    category: "Programming",
-    isbn: "978-0201633610",
-    status: "available",
-    description: "Elements of reusable object-oriented software.",
-  },
-  {
-    id: 4,
-    title: "The Great Gatsby",
-    author: "F. Scott Fitzgerald",
-    category: "Fiction",
-    isbn: "978-0743273565",
-    status: "available",
-    description: "A classic novel of the Jazz Age.",
-  },
-  {
-    id: 5,
-    title: "To Kill a Mockingbird",
-    author: "Harper Lee",
-    category: "Fiction",
-    isbn: "978-0061120084",
-    status: "issued",
-    description: "A novel about racial injustice in the American South.",
-  },
-  {
-    id: 6,
-    title: "1984",
-    author: "George Orwell",
-    category: "Fiction",
-    isbn: "978-0451524935",
-    status: "available",
-    description: "A dystopian social science fiction novel.",
-  },
-  {
-    id: 7,
-    title: "A Brief History of Time",
-    author: "Stephen Hawking",
-    category: "Science",
-    isbn: "978-0553380163",
-    status: "available",
-    description: "A popular-science book on cosmology.",
-  },
-  {
-    id: 8,
-    title: "Sapiens: A Brief History of Humankind",
-    author: "Yuval Noah Harari",
-    category: "History",
-    isbn: "978-0062316097",
-    status: "available",
-    description:
-      "Explores the history of humankind from evolution to modern times.",
-  },
-];
+// // Book data
+// const books = [
+//   {
+//     id: 1,
+//     title: "The C++ Programming Language",
+//     author: "Bjarne Stroustrup",
+//     category: "Programming",
+//     isbn: "978-0321563842",
+//     status: "available",
+//     description: "A comprehensive reference and tutorial for C++ programmers.",
+//   },
+//   {
+//     id: 2,
+//     title: "Clean Code",
+//     author: "Robert C. Martin",
+//     category: "Programming",
+//     isbn: "978-0132350884",
+//     status: "issued",
+//     description: "A handbook of agile software craftsmanship.",
+//   },
+//   {
+//     id: 3,
+//     title: "Design Patterns",
+//     author: "Erich Gamma",
+//     category: "Programming",
+//     isbn: "978-0201633610",
+//     status: "available",
+//     description: "Elements of reusable object-oriented software.",
+//   },
+//   {
+//     id: 4,
+//     title: "The Great Gatsby",
+//     author: "F. Scott Fitzgerald",
+//     category: "Fiction",
+//     isbn: "978-0743273565",
+//     status: "available",
+//     description: "A classic novel of the Jazz Age.",
+//   },
+//   {
+//     id: 5,
+//     title: "To Kill a Mockingbird",
+//     author: "Harper Lee",
+//     category: "Fiction",
+//     isbn: "978-0061120084",
+//     status: "issued",
+//     description: "A novel about racial injustice in the American South.",
+//   },
+//   {
+//     id: 6,
+//     title: "1984",
+//     author: "George Orwell",
+//     category: "Fiction",
+//     isbn: "978-0451524935",
+//     status: "available",
+//     description: "A dystopian social science fiction novel.",
+//   },
+//   {
+//     id: 7,
+//     title: "A Brief History of Time",
+//     author: "Stephen Hawking",
+//     category: "Science",
+//     isbn: "978-0553380163",
+//     status: "available",
+//     description: "A popular-science book on cosmology.",
+//   },
+//   {
+//     id: 8,
+//     title: "Sapiens: A Brief History of Humankind",
+//     author: "Yuval Noah Harari",
+//     category: "History",
+//     isbn: "978-0062316097",
+//     status: "available",
+//     description:
+//       "Explores the history of humankind from evolution to modern times.",
+//   },
+// ];
 
 // Issued books data
 const issuedBooks = [
@@ -169,9 +169,31 @@ const issuedBooks = [
   },
 ];
 
+let books = [];
+
 // Load books into the search page
-function loadBooks(filteredBooks = books) {
-  bookCardsContainer.innerHTML = "";
+async function loadBooks(book) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Unauthorized. Please login again.");
+    window.location.href = "/pages/login.html";
+    return;
+  }
+  const response = await fetch("http://localhost:5000/api/getBook", {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+  if (!data.success) {
+    alert(data.message);
+    return;
+  }
+  books = data.BOOKs;
+  const filteredBooks = books;
+  console .log(filteredBooks);
 
   if (filteredBooks.length === 0) {
     bookCardsContainer.innerHTML = `
@@ -188,14 +210,7 @@ function loadBooks(filteredBooks = books) {
     const bookCard = document.createElement("div");
     bookCard.className = "book-card";
 
-    const statusClass =
-      book.status === "available" ? "status-available" : "status-issued";
-    const statusIcon = book.status === "available" ? "🟢" : "🔴";
-
     bookCard.innerHTML = `
-                    <span class="book-status ${statusClass}">${statusIcon} ${
-      book.status.charAt(0).toUpperCase() + book.status.slice(1)
-    }</span>
                     <div class="book-icon">
                         <i class="fas fa-book"></i>
                     </div>
@@ -210,7 +225,7 @@ function loadBooks(filteredBooks = books) {
                     </div>
                     <div class="book-meta">
                         <i class="fas fa-barcode"></i>
-                        <span>ISBN: ${book.isbn}</span>
+                        <span>ISBN: ${book.ISBNNumber}</span>
                     </div>
                     <p style="color: var(--dark-gray); font-size: 0.9rem; margin-top: 15px; line-height: 1.5;">
                         ${book.description}
@@ -298,7 +313,7 @@ function filterBooks() {
       !searchTerm ||
       book.title.toLowerCase().includes(searchTerm) ||
       book.author.toLowerCase().includes(searchTerm) ||
-      book.isbn.includes(searchTerm);
+      book.ISBNNumber.includes(searchTerm);
 
     // Category filter
     const matchesCategory = !category || book.category === category;
@@ -407,7 +422,7 @@ function viewBookDetails(bookId) {
       `Title: ${book.title}\n` +
       `Author: ${book.author}\n` +
       `Category: ${book.category}\n` +
-      `ISBN: ${book.isbn}\n` +
+      `ISBN: ${book.ISBNNumber}\n` +
       `Status: ${status}\n\n` +
       `Description: ${book.description}`
   );
@@ -481,4 +496,15 @@ window.addEventListener("load", () => {
   });
 });
 
+// Logout Function
 
+const logoutBtn = document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+
+  window.location.href = "/index.html";
+});

@@ -22,11 +22,6 @@ function validatePassword(value) {
   return value.length >= 6;
 }
 
-// Role validation
-function validateRole(value) {
-  return value && value !== "";
-}
-
 // Show error
 function showError(input, errorElement, message) {
   input.classList.remove("success");
@@ -67,16 +62,8 @@ passwordInput.addEventListener("blur", () => {
   }
 });
 
-roleSelect.addEventListener("change", () => {
-  if (!validateRole(roleSelect.value)) {
-    showError(roleSelect, roleError, "Please select a role");
-  } else {
-    showSuccess(roleSelect, roleError);
-  }
-});
-
 // Form submission
-loginForm.addEventListener("submit", function (e) {
+loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   let isValid = true;
@@ -103,14 +90,6 @@ loginForm.addEventListener("submit", function (e) {
   } else {
     showSuccess(passwordInput, passwordError);
   }
-
-  if (!validateRole(roleSelect.value)) {
-    showError(roleSelect, roleError, "Please select a role");
-    isValid = false;
-  } else {
-    showSuccess(roleSelect, roleError);
-  }
-
   // If valid, submit form (in real app, this would go to server)
   if (isValid) {
     // Simulate login process
@@ -119,24 +98,51 @@ loginForm.addEventListener("submit", function (e) {
     submitBtn.textContent = "Logging in...";
     submitBtn.disabled = true;
 
-    // Simulate API call
-    setTimeout(() => {
-      alert(
-        `Login successful! Welcome ${
-          roleSelect.value === "admin" ? "Admin" : "Student"
-        }`
-      );
+    // Calling backend login api
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          emailOrRoll: emailInput.value.trim(),
+          password: passwordInput.value.trim(),
+        }),
+      });
 
-      // Redirect based on role
-      if (roleSelect.value === "admin") {
-        window.location.href = "dashboard.html"; // You'll need to create this
-      } else {
-        window.location.href = "student-dashboard.html"; // You'll need to create this
+      const data = await response.json();
+
+      if (!data.success) {
+        document.getElementById("msgBox").innerText = data.message;
+        if(data.err == "psw"){
+          passwordInput.classList.remove("success");
+          passwordInput.classList.add("error");
+        }
+        else if(data.err == "usr"){
+          emailInput.classList.remove("success");
+          emailInput.classList.add("error");
+        }
+        return;
       }
 
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+
+      if (data.role == "student") {
+        window.location.href = "/pages/studentDashboard.html";
+      } else if (data.role == "admin") {
+        window.location.href = "/pages/adminDashboard.html";
+      } else {
+        document.getElementById("msgBox").innerText = "Unknown Role";
+      }
+    } catch (err) {
+      document.getElementById("msgBox").innerText = err.message;
+      console.error(err.message);
+    } finally {
       submitBtn.textContent = originalText;
       submitBtn.disabled = false;
-    }, 1500);
+    }
   }
 });
 
@@ -154,3 +160,50 @@ forgotPasswordLink.addEventListener("click", function (e) {
     }
   }
 });
+
+//Backend Connections
+
+// loginForm.addEventListener("submit", async (e) => {
+//   e.preventDefault();
+//   const emailOrRoll = document.getElementById("email").value;
+//   const password = document.getElementById("password").value;
+
+//   if (!emailOrRoll || !password) {
+//     alert("All fields are required.");
+//     return;
+//   }
+
+//   try {
+//     const response = await fetch("http://localhost:5000/api/login", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         emailOrRoll,
+//         password,
+//       }),
+//     });
+
+//     const data = await response.json();
+
+//     if (!data.success) {
+//       alert(data.message || "Login Failed");
+//       return;
+//     }
+
+//     localStorage.setItem("token", data.token);
+//     localStorage.setItem("role", data.role);
+
+//     if (data.role == "student") {
+//       window.location.href = "/pages/studentDashboard.html";
+//     } else if (data.role == "admin") {
+//       window.location.hre = "/pages/adminDashboard.html";
+//     } else {
+//       alert("Unknown Role");
+//     }
+//   } catch (err) {
+//     alert("Server Error");
+//     console.error(err.message);
+//   }
+// });

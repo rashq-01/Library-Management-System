@@ -64,7 +64,7 @@ async function addBook(req,res){
 async function getAllBooks(req,res){
     try{
 
-        const BOOKs = await book.find().select("title ISBNNumber category totalCopies issuedCopies");
+        const BOOKs = await book.find();
 
         return res.status(200).json({
             success : true,

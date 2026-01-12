@@ -22,6 +22,7 @@
             
             <div class="auth-body">
                 <form id="loginForm">
+                    <p id="msgBox"></p>
                     <div class="form-group">
                         <label for="email">Email / Roll No</label>
                         <div class="input-with-icon">
@@ -40,17 +41,6 @@
                         <div class="error-message" id="passwordError">Password must be at least 6 characters</div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="role">Role</label>
-                        <div class="select-wrapper">
-                            <select id="role" class="form-control" required>
-                                <option value="" disabled selected>Select your role</option>
-                                <option value="admin">Admin</option>
-                                <option value="student">Student</option>
-                            </select>
-                        </div>
-                        <div class="error-message" id="roleError">Please select a role</div>
-                    </div>
                     
                     <div class="form-options">
                         <div class="remember-me">

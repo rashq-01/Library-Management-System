@@ -76,6 +76,7 @@ async function login(req, res) {
       return res.status(404).json({
         success: false,
         message: "User not found",
+        err : "usr"
       });
     }
 
@@ -85,6 +86,7 @@ async function login(req, res) {
       return res.status(401).json({
         success: false,
         message: "Password do not match",
+        err : "psw"
       });
     }
 
