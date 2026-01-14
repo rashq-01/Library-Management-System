@@ -1,4 +1,6 @@
 const user = require("../models/user.js");
+const issuedBook = require("../models/issuedBook.js");
+const books = require("../models/book.js");
 
 async function getMyProfile(req, res) {
   try {
@@ -12,10 +14,74 @@ async function getMyProfile(req, res) {
         message: "User not Found",
       });
     }
+    let ISSUEDBOOKs = await issuedBook.find({
+      rollNumber: User.rollNumber,
+      returnDate: null,
+    });
 
+    const totalIssuedBooks = ISSUEDBOOKs.length;
+    const nearestDueBook = await issuedBook
+      .findOne({
+        rollNumber: User.rollNumber,
+        returnDate: null,
+        dueDate: { $gte: new Date() },
+      })
+      .sort({ dueDate: 1 });
+
+    const today = new Date();
+
+    const fineResult = await issuedBook.aggregate([
+      {
+        $match: {
+          rollNumber: User.rollNumber,
+          returnDate: null,
+        },
+      },
+      {
+        $addFields: {
+          lateDays: {
+            $cond: [
+              { $lt: ["$dueDate", today] },
+              {
+                $ceil: {
+                  $divide: [
+                    { $subtract: [today, "$dueDate"] },
+                    1000 * 60 * 60 * 24,
+                  ],
+                },
+              },
+              0,
+            ],
+          },
+        },
+      },
+      {
+        $addFields: {
+          calculatedFine: {
+            $multiply: ["$lateDays", 10], // ₹10 per day
+          },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalFine: { $sum: "$calculatedFine" },
+        },
+      },
+    ]);
+
+    const totalFinePending =
+      fineResult.length > 0 ? fineResult[0].totalFine : 0;
+    const totalAvailableBooks = await books.countDocuments({
+      $expr: { $gt: ["$totalCopies", "$issuedCopies"] },
+    });
     return res.status(200).json({
       success: true,
       user: User,
+      totalIssuedBooks: totalIssuedBooks,
+      nearestDueBook: nearestDueBook,
+      totalFinePending: totalFinePending,
+      totalAvailableBooks: totalAvailableBooks,
       message: "Data retrieve successful",
     });
   } catch (err) {
@@ -34,7 +100,6 @@ async function getAllUser(req, res) {
         message: "Access denied. Admin only.",
       });
     }
-
 
     const Users = await user.find().select("-password");
 
