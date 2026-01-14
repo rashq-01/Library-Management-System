@@ -1,3 +1,4 @@
+const PORT = 5000;
 // DOM Elements
 const dashboardSidebar = document.getElementById("dashboardSidebar");
 const mobileToggle = document.getElementById("mobileToggle");
@@ -11,6 +12,13 @@ const categoryFilter = document.getElementById("categoryFilter");
 const authorFilter = document.getElementById("authorFilter");
 const availabilityFilter = document.getElementById("availabilityFilter");
 const issueNewBookBtn = document.getElementById("issueNewBook");
+
+const token = localStorage.getItem("token");
+if (!token) {
+  alert("Unauthorized. Please login again.");
+  window.location.href = "/pages/login.html";
+}
+
 
 // Set current date
 function updateCurrentDate() {
@@ -28,15 +36,15 @@ function updateCurrentDate() {
 menuItems.forEach((item) => {
   item.addEventListener("click", function (e) {
     e.preventDefault();
-
+    
     // Remove active class from all menu items
     menuItems.forEach((i) => i.classList.remove("active"));
     // Add active class to clicked item
     this.classList.add("active");
-
+    
     // Get tab to show
     const tabToShow = this.getAttribute("data-tab");
-
+    
     // Hide all tab contents
     document.querySelectorAll(".tab-content").forEach((tab) => {
       tab.classList.remove("active");
@@ -44,17 +52,17 @@ menuItems.forEach((item) => {
 
     // Show selected tab
     document.getElementById(`${tabToShow}Tab`).classList.add("active");
-
+    
     // If switching to search tab, load books
     if (tabToShow === "searchBook") {
       loadBooks();
     }
-
+    
     // If switching to my books tab, load issued books
     if (tabToShow === "myBooks") {
       loadIssuedBooks();
     }
-
+    
     // On mobile, close sidebar after clicking
     if (window.innerWidth <= 992) {
       dashboardSidebar.classList.remove("active");
@@ -67,84 +75,6 @@ mobileToggle.addEventListener("click", () => {
   dashboardSidebar.classList.toggle("active");
 });
 
-// // Book data
-// const books = [
-//   {
-//     id: 1,
-//     title: "The C++ Programming Language",
-//     author: "Bjarne Stroustrup",
-//     category: "Programming",
-//     isbn: "978-0321563842",
-//     status: "available",
-//     description: "A comprehensive reference and tutorial for C++ programmers.",
-//   },
-//   {
-//     id: 2,
-//     title: "Clean Code",
-//     author: "Robert C. Martin",
-//     category: "Programming",
-//     isbn: "978-0132350884",
-//     status: "issued",
-//     description: "A handbook of agile software craftsmanship.",
-//   },
-//   {
-//     id: 3,
-//     title: "Design Patterns",
-//     author: "Erich Gamma",
-//     category: "Programming",
-//     isbn: "978-0201633610",
-//     status: "available",
-//     description: "Elements of reusable object-oriented software.",
-//   },
-//   {
-//     id: 4,
-//     title: "The Great Gatsby",
-//     author: "F. Scott Fitzgerald",
-//     category: "Fiction",
-//     isbn: "978-0743273565",
-//     status: "available",
-//     description: "A classic novel of the Jazz Age.",
-//   },
-//   {
-//     id: 5,
-//     title: "To Kill a Mockingbird",
-//     author: "Harper Lee",
-//     category: "Fiction",
-//     isbn: "978-0061120084",
-//     status: "issued",
-//     description: "A novel about racial injustice in the American South.",
-//   },
-//   {
-//     id: 6,
-//     title: "1984",
-//     author: "George Orwell",
-//     category: "Fiction",
-//     isbn: "978-0451524935",
-//     status: "available",
-//     description: "A dystopian social science fiction novel.",
-//   },
-//   {
-//     id: 7,
-//     title: "A Brief History of Time",
-//     author: "Stephen Hawking",
-//     category: "Science",
-//     isbn: "978-0553380163",
-//     status: "available",
-//     description: "A popular-science book on cosmology.",
-//   },
-//   {
-//     id: 8,
-//     title: "Sapiens: A Brief History of Humankind",
-//     author: "Yuval Noah Harari",
-//     category: "History",
-//     isbn: "978-0062316097",
-//     status: "available",
-//     description:
-//       "Explores the history of humankind from evolution to modern times.",
-//   },
-// ];
-
-// Issued books data
 const issuedBooks = [
   {
     id: 2,
@@ -172,76 +102,95 @@ const issuedBooks = [
 let books = [];
 
 // Load books into the search page
-async function loadBooks(book) {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Unauthorized. Please login again.");
-    window.location.href = "/pages/login.html";
-    return;
-  }
-  const response = await fetch("http://localhost:5000/api/getBook", {
+async function loadBooks(filteredBooks) {
+  try {
+    if (!token) {
+      alert("Unauthorized. Please login again.");
+      window.location.href = "/pages/login.html";
+      return;
+    }
+    if (!filteredBooks) {
+      const response = await fetch("http://localhost:5000/api/getBook", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      const data = await response.json();
+      if (!data.success) {
+        alert(data.message);
+        return;
+      }
+      books = data.BOOKs;
+      filteredBooks = books;
+      console.log(filteredBooks);
+    }
+    
+    if (filteredBooks.length === 0) {
+      bookCardsContainer.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--dark-gray);">
+                    <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                    <h3>No books found</h3>
+                    <p>Try adjusting your search or filters</p>
+                    </div>
+                    `;
+      return;
+    }
+    
+    filteredBooks.forEach((book) => {
+      const bookCard = document.createElement("div");
+      bookCard.className = "book-card";
+      
+      bookCard.innerHTML = `
+      <div class="book-icon">
+      <i class="fas fa-book"></i>
+      </div>
+      <h3>${book.title}</h3>
+      <div class="book-meta">
+      <i class="fas fa-user-edit"></i>
+      <span>${book.author}</span>
+      </div>
+      <div class="book-meta">
+      <i class="fas fa-tag"></i>
+      <span>${book.category}</span>
+      </div>
+                    <div class="book-meta">
+                    <i class="fas fa-barcode"></i>
+                        <span>ISBN: ${book.ISBNNumber}</span>
+                        </div>
+                    <p style="color: var(--dark-gray); font-size: 0.9rem; margin-top: 15px; line-height: 1.5;">
+                        ${book.description}
+                        </p>
+                        <div class="book-actions">
+                        <button class="btn btn-outline" onclick="viewBookDetails(${book.id})">
+                        <i class="fas fa-info-circle"></i> Details
+                        </button>
+                        </div>
+                        `;
+
+      bookCardsContainer.appendChild(bookCard);
+    });
+  } catch (err) {}
+}
+
+async function loadUserDetails() {
+  const response = await fetch(`http://localhost:${PORT}/api/me`, {
     method: "GET",
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
-
-  const data = await response.json();
-  if (!data.success) {
-    alert(data.message);
-    return;
-  }
-  books = data.BOOKs;
-  const filteredBooks = books;
-  console .log(filteredBooks);
-
-  if (filteredBooks.length === 0) {
-    bookCardsContainer.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--dark-gray);">
-                        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
-                        <h3>No books found</h3>
-                        <p>Try adjusting your search or filters</p>
-                    </div>
-                `;
-    return;
-  }
-
-  filteredBooks.forEach((book) => {
-    const bookCard = document.createElement("div");
-    bookCard.className = "book-card";
-
-    bookCard.innerHTML = `
-                    <div class="book-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <h3>${book.title}</h3>
-                    <div class="book-meta">
-                        <i class="fas fa-user-edit"></i>
-                        <span>${book.author}</span>
-                    </div>
-                    <div class="book-meta">
-                        <i class="fas fa-tag"></i>
-                        <span>${book.category}</span>
-                    </div>
-                    <div class="book-meta">
-                        <i class="fas fa-barcode"></i>
-                        <span>ISBN: ${book.ISBNNumber}</span>
-                    </div>
-                    <p style="color: var(--dark-gray); font-size: 0.9rem; margin-top: 15px; line-height: 1.5;">
-                        ${book.description}
-                    </p>
-                    <div class="book-actions">
-                        <button class="btn btn-outline" onclick="viewBookDetails(${
-                          book.id
-                        })">
-                            <i class="fas fa-info-circle"></i> Details
-                        </button>
-                    </div>
-                `;
-
-    bookCardsContainer.appendChild(bookCard);
-  });
+  const details = await response.json();
+  console.log("ME API RESPONSE : ", details);
+  document.getElementById("fullName").innerHTML = details.user.fullName;
+  document.getElementById(
+    "rollNumber"
+  ).innerHTML = `Roll No : ${details.user.rollNumber.toUpperCase()}`;
+  document.getElementById("name").innerHTML = details.user.fullName;
 }
+
 
 // Load issued books into the table
 function loadIssuedBooks() {
@@ -459,6 +408,7 @@ window.addEventListener("load", () => {
   updateCurrentDate();
   loadBooks();
   loadIssuedBooks();
+  loadUserDetails();
 
   // Calculate nearest due date
   if (issuedBooks.length > 0) {
