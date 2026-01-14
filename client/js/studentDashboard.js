@@ -12,13 +12,15 @@ const categoryFilter = document.getElementById("categoryFilter");
 const authorFilter = document.getElementById("authorFilter");
 const availabilityFilter = document.getElementById("availabilityFilter");
 const issueNewBookBtn = document.getElementById("issueNewBook");
+let issuedBooks = [];
+let response = null;
+let books = [];
 
 const token = localStorage.getItem("token");
 if (!token) {
   alert("Unauthorized. Please login again.");
   window.location.href = "/pages/login.html";
 }
-
 
 // Set current date
 function updateCurrentDate() {
@@ -36,15 +38,15 @@ function updateCurrentDate() {
 menuItems.forEach((item) => {
   item.addEventListener("click", function (e) {
     e.preventDefault();
-    
+
     // Remove active class from all menu items
     menuItems.forEach((i) => i.classList.remove("active"));
     // Add active class to clicked item
     this.classList.add("active");
-    
+
     // Get tab to show
     const tabToShow = this.getAttribute("data-tab");
-    
+
     // Hide all tab contents
     document.querySelectorAll(".tab-content").forEach((tab) => {
       tab.classList.remove("active");
@@ -52,17 +54,17 @@ menuItems.forEach((item) => {
 
     // Show selected tab
     document.getElementById(`${tabToShow}Tab`).classList.add("active");
-    
+
     // If switching to search tab, load books
     if (tabToShow === "searchBook") {
       loadBooks();
     }
-    
+
     // If switching to my books tab, load issued books
     if (tabToShow === "myBooks") {
       loadIssuedBooks();
     }
-    
+
     // On mobile, close sidebar after clicking
     if (window.innerWidth <= 992) {
       dashboardSidebar.classList.remove("active");
@@ -75,40 +77,9 @@ mobileToggle.addEventListener("click", () => {
   dashboardSidebar.classList.toggle("active");
 });
 
-const issuedBooks = [
-  {
-    id: 2,
-    title: "Clean Code",
-    issueDate: "2023-10-10",
-    dueDate: "2023-10-24",
-    fine: 0,
-  },
-  {
-    id: 3,
-    title: "Design Patterns",
-    issueDate: "2023-10-05",
-    dueDate: "2023-10-19",
-    fine: 5.0,
-  },
-  {
-    id: 5,
-    title: "To Kill a Mockingbird",
-    issueDate: "2023-10-15",
-    dueDate: "2023-10-29",
-    fine: 0,
-  },
-];
-
-let books = [];
-
 // Load books into the search page
 async function loadBooks(filteredBooks) {
   try {
-    if (!token) {
-      alert("Unauthorized. Please login again.");
-      window.location.href = "/pages/login.html";
-      return;
-    }
     if (!filteredBooks) {
       const response = await fetch("http://localhost:5000/api/getBook", {
         method: "GET",
@@ -116,7 +87,13 @@ async function loadBooks(filteredBooks) {
           Authorization: `Bearer ${token}`,
         },
       });
-      
+      if (response.status == 401) {
+        alert(response.json().message);
+        localStorage.removeItem("token");
+        window.location.href = "/pages/login.html";
+        return;
+      }
+
       const data = await response.json();
       if (!data.success) {
         alert(data.message);
@@ -124,9 +101,8 @@ async function loadBooks(filteredBooks) {
       }
       books = data.BOOKs;
       filteredBooks = books;
-      console.log(filteredBooks);
     }
-    
+
     if (filteredBooks.length === 0) {
       bookCardsContainer.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--dark-gray);">
@@ -137,11 +113,11 @@ async function loadBooks(filteredBooks) {
                     `;
       return;
     }
-    
+
     filteredBooks.forEach((book) => {
       const bookCard = document.createElement("div");
       bookCard.className = "book-card";
-      
+
       bookCard.innerHTML = `
       <div class="book-icon">
       <i class="fas fa-book"></i>
@@ -182,71 +158,112 @@ async function loadUserDetails() {
       Authorization: `Bearer ${token}`,
     },
   });
+  if (response.status == 401) {
+    alert(response.json().message);
+    localStorage.removeItem("token");
+    window.location.href = "/pages/login.html";
+    return;
+  }
   const details = await response.json();
-  console.log("ME API RESPONSE : ", details);
   document.getElementById("fullName").innerHTML = details.user.fullName;
   document.getElementById(
     "rollNumber"
   ).innerHTML = `Roll No : ${details.user.rollNumber.toUpperCase()}`;
-  document.getElementById("name").innerHTML = details.user.fullName;
+  document.getElementById("fullName").innerHTML = details.user.fullName;
+  document.getElementById(
+    "rollNumber"
+  ).innerHTML = `Roll No: ${details.user.rollNumber.toUpperCase()}`;
+  document.getElementById("totalIssuedBooks").innerHTML =
+    details.totalIssuedBooks;
+  let today = new Date();
+  let dueDate = Math.ceil(
+    (new Date(details.nearestDueBook.dueDate) - today) / (1000 * 60 * 60 * 24)
+  );
+  document.getElementById("nearestDueDate").innerHTML = `${dueDate} Days`;
+  document.getElementById(
+    "totalFine"
+  ).innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i> ${details.totalFinePending}`;
+  document.getElementById("totalAvailableBooks").innerHTML = details.totalAvailableBooks;
+  let headName = details.user.fullName;
+  let firstName = headName?.trim().split(/\s+/)[0] || "";
+  document.getElementById("headName").innerHTML = firstName;
 }
 
-
 // Load issued books into the table
-function loadIssuedBooks() {
-  issuedBooksTable.innerHTML = "";
+async function loadIssuedBooks() {
+  try {
+    const response = await fetch(`http://localhost:${PORT}/api/me`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status == 401) {
+      alert(response.json().message);
+      localStorage.removeItem("token");
+      window.location.href = "/pages/login.html";
+      return;
+    }
+    const details = await response.json();
+    issuedBooks = details.ISSUEDBOOKs;
 
-  if (issuedBooks.length === 0) {
-    issuedBooksTable.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--dark-gray);">
+    issuedBooksTable.innerHTML = "";
+
+    if (issuedBooks.length === 0) {
+      issuedBooksTable.innerHTML = `
+      <tr>
+      <td colspan="6" style="text-align: center; padding: 40px; color: var(--dark-gray);">
                             <i class="fas fa-book" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5; display: block;"></i>
                             <h4>No books issued</h4>
                             <p>You haven't issued any books yet.</p>
-                        </td>
-                    </tr>
-                `;
-    return;
-  }
-
-  issuedBooks.forEach((book) => {
-    const issueDate = new Date(book.issueDate);
-    const dueDate = new Date(book.dueDate);
-    const today = new Date();
-
-    // Calculate days left
-    const timeDiff = dueDate.getTime() - today.getTime();
-    const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-    // Determine status
-    let statusClass = "status-ok";
-    let statusText = `${daysLeft} days`;
-
-    if (daysLeft < 0) {
-      statusClass = "status-overdue";
-      statusText = `Overdue by ${Math.abs(daysLeft)} days`;
-    } else if (daysLeft === 0) {
-      statusClass = "status-overdue";
-      statusText = "Due today";
-    } else if (daysLeft <= 3) {
-      statusClass = "status-overdue";
-      statusText = `${daysLeft} days`;
+                            </td>
+                            </tr>
+                            `;
+      return;
     }
 
-    const fineClass = book.fine > 0 ? "fine-amount" : "no-fine";
-    const fineText = book.fine > 0 ? `$${book.fine.toFixed(2)}` : "No fine";
+    issuedBooks.forEach((book) => {
+      const issueDate = new Date(book.issueDate);
+      const dueDate = new Date(book.dueDate);
+      const today = new Date();
 
-    const row = document.createElement("tr");
-    row.innerHTML = `
-                    <td><strong>${book.title}</strong></td>
-                    <td>${issueDate.toLocaleDateString()}</td>
-                    <td>${dueDate.toLocaleDateString()}</td>
-                    <td class="${statusClass}">${statusText}</td>
-                    <td class="${fineClass}">${fineText}</td>
-                `;
+      // Calculate days left
+      const timeDiff = dueDate.getTime() - today.getTime();
+      const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-    issuedBooksTable.appendChild(row);
-  });
+      // Determine status
+      let statusClass = "status-ok";
+      let statusText = `${daysLeft} days`;
+
+      if (daysLeft < 0) {
+        statusClass = "status-overdue";
+        statusText = `Overdue by ${Math.abs(daysLeft)} days`;
+      } else if (daysLeft === 0) {
+        statusClass = "status-overdue";
+        statusText = "Due today";
+      } else if (daysLeft <= 3) {
+        statusClass = "status-overdue";
+        statusText = `${daysLeft} days`;
+      }
+      let particularFine = Math.ceil((today-dueDate)/(1000*60*60*24))*30 > 0 ?  Math.ceil((today-dueDate)/(1000*60*60*24))*5 : 0;
+      const fineClass =
+        particularFine > 0 ? "fine-amount" : "no-fine";
+      const fineText =
+        particularFine> 0 ? `<i class="fa-solid fa-indian-rupee-sign"></i> ${particularFine}` : "No fine";
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+    <td><strong>${book.title}</strong></td>
+    <td>${issueDate.toLocaleDateString()}</td>
+    <td>${dueDate.toLocaleDateString()}</td>
+    <td class="${statusClass}">${statusText}</td>
+    <td class="${fineClass}">${fineText}</td>
+    `;
+
+      issuedBooksTable.appendChild(row);
+    });
+  } catch (err) {}
 }
 
 // Search and filter books
@@ -387,20 +404,6 @@ searchInput.addEventListener("keyup", (e) => {
 
 [categoryFilter, authorFilter, availabilityFilter].forEach((filter) => {
   filter.addEventListener("change", filterBooks);
-});
-
-issueNewBookBtn.addEventListener("click", () => {
-  // Switch to search tab
-  menuItems.forEach((i) => i.classList.remove("active"));
-  document.querySelector('[data-tab="searchBook"]').classList.add("active");
-
-  document.querySelectorAll(".tab-content").forEach((tab) => {
-    tab.classList.remove("active");
-  });
-  document.getElementById("searchBookTab").classList.add("active");
-
-  // Focus search input
-  searchInput.focus();
 });
 
 // Initialize

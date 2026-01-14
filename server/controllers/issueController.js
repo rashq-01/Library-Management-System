@@ -40,7 +40,8 @@ async function issueBook(req,res){
         rollNumber,
         ISBNNumber,
         bookId : BOOK._id,
-        dueDate : dueDate
+        dueDate : dueDate,
+        title : BOOK.title
       })
 
 

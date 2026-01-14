@@ -6,6 +6,11 @@ const issuedBook = new mongoose.Schema(
             type : String,
             trim : true,
         },
+        title :{
+            type : String,
+            trim : true,
+            required : true
+        },
         rollNumber : {
             type : String,
             trim : true,

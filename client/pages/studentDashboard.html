@@ -19,7 +19,7 @@
                     </div>
                     <div class="user-name" id="fullName">Alex Johnson</div>
                     <div class="user-role">Student</div>
-                    <div style="font-size: 0.85rem; margin-top: 10px; color: #bbb;">Roll No: CS2023001</div>
+                    <div style="font-size: 0.85rem; margin-top: 10px; color: #bbb;" id="rollNumber">Roll No: CS2023001</div>
                 </div>
             </div>
             
@@ -51,7 +51,7 @@
             <div class="dashboard-header">
                 <div class="header-left">
                     <h1><i class="fas fa-book-reader"></i> Student Dashboard</h1>
-                    <p>Welcome back, Alex! Manage your library activities here.</p>
+                    <p>Welcome back, <span id="headName">Alex</span>! Manage your library activities here.</p>
                 </div>
                 <div class="header-right">
                     <div class="current-date" id="currentDate"></div>
@@ -68,7 +68,7 @@
                     <div class="dashboard-cards">
                         <div class="dashboard-card card-books-issued">
                             <div class="card-info">
-                                <h3>3</h3>
+                                <h3 id="totalIssuedBooks">3</h3>
                                 <p>Books Issued</p>
                             </div>
                             <div class="card-icon">
@@ -78,7 +78,7 @@
                         
                         <div class="dashboard-card card-due-date">
                             <div class="card-info">
-                                <h3>2 Days</h3>
+                                <h3 id="nearestDueDate">2 Days</h3>
                                 <p>Nearest Due Date</p>
                             </div>
                             <div class="card-icon">
@@ -88,7 +88,7 @@
                         
                         <div class="dashboard-card card-fine">
                             <div class="card-info">
-                                <h3>$5.00</h3>
+                                <h3 id="totalFine">$5.00</h3>
                                 <p>Pending Fine</p>
                             </div>
                             <div class="card-icon">
@@ -98,7 +98,7 @@
                         
                         <div class="dashboard-card card-available-books">
                             <div class="card-info">
-                                <h3>2,124</h3>
+                                <h3 id="totalAvailableBooks">2,124</h3>
                                 <p>Available Books</p>
                             </div>
                             <div class="card-icon">
@@ -179,9 +179,6 @@
                     <div class="content-section">
                         <div class="section-header">
                             <h2><i class="fas fa-book-open"></i> My Issued Books</h2>
-                            <button class="btn btn-primary" id="issueNewBook">
-                                <i class="fas fa-plus"></i> Issue New Book
-                            </button>
                         </div>
                         
                         <table class="data-table">
