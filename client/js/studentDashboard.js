@@ -1,3 +1,4 @@
+const PORT = 5000;
 // DOM Elements
 const dashboardSidebar = document.getElementById("dashboardSidebar");
 const mobileToggle = document.getElementById("mobileToggle");
@@ -11,6 +12,48 @@ const categoryFilter = document.getElementById("categoryFilter");
 const authorFilter = document.getElementById("authorFilter");
 const availabilityFilter = document.getElementById("availabilityFilter");
 const issueNewBookBtn = document.getElementById("issueNewBook");
+
+const token = localStorage.getItem("token");
+if (!token) {
+  alert("Unauthorized. Please login again.");
+  window.location.href = "/pages/login.html";
+}
+
+async function loadUserDetails() {
+  const response = await fetch(`http://localhost:${PORT}/api/me`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const details = await response.json();
+  console.log("ME API RESPONSE : ", details);
+  document.getElementById("user-name").innerText = details.user.fullName;
+  document.getElementById(
+    "rollNumber"
+  ).innerHTML = `Roll No : ${details.user.rollNumber.toUpperCase()}`;
+  document.getElementById("name").innerHTML = details.user.fullName;
+  document.getElementById("totalBookIssued").innerHTML =
+    details.totalIssuedBooks;
+
+  if (details.nearestDueBook) {
+    const dueDate = new Date(details.nearestDueBook.dueDate);
+    const today = new Date();
+
+    const diffTime = dueDate - today;
+    let daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    document.getElementById("nearestDueDate").innerHTML = daysRemaining + " Days";
+  }
+  else{
+    document.getElementById("nearestDueDate").innerHTML = "No Due";
+  }
+  document.getElementById("finePending").innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i> ${details.totalFinePending}`;
+  document.getElementById("totalAvailableBooks").innerHTML = details.totalAvailableBooks;
+  
+}
+
+loadUserDetails();
 
 // Set current date
 function updateCurrentDate() {
@@ -67,113 +110,11 @@ mobileToggle.addEventListener("click", () => {
   dashboardSidebar.classList.toggle("active");
 });
 
-// // Book data
-// const books = [
-//   {
-//     id: 1,
-//     title: "The C++ Programming Language",
-//     author: "Bjarne Stroustrup",
-//     category: "Programming",
-//     isbn: "978-0321563842",
-//     status: "available",
-//     description: "A comprehensive reference and tutorial for C++ programmers.",
-//   },
-//   {
-//     id: 2,
-//     title: "Clean Code",
-//     author: "Robert C. Martin",
-//     category: "Programming",
-//     isbn: "978-0132350884",
-//     status: "issued",
-//     description: "A handbook of agile software craftsmanship.",
-//   },
-//   {
-//     id: 3,
-//     title: "Design Patterns",
-//     author: "Erich Gamma",
-//     category: "Programming",
-//     isbn: "978-0201633610",
-//     status: "available",
-//     description: "Elements of reusable object-oriented software.",
-//   },
-//   {
-//     id: 4,
-//     title: "The Great Gatsby",
-//     author: "F. Scott Fitzgerald",
-//     category: "Fiction",
-//     isbn: "978-0743273565",
-//     status: "available",
-//     description: "A classic novel of the Jazz Age.",
-//   },
-//   {
-//     id: 5,
-//     title: "To Kill a Mockingbird",
-//     author: "Harper Lee",
-//     category: "Fiction",
-//     isbn: "978-0061120084",
-//     status: "issued",
-//     description: "A novel about racial injustice in the American South.",
-//   },
-//   {
-//     id: 6,
-//     title: "1984",
-//     author: "George Orwell",
-//     category: "Fiction",
-//     isbn: "978-0451524935",
-//     status: "available",
-//     description: "A dystopian social science fiction novel.",
-//   },
-//   {
-//     id: 7,
-//     title: "A Brief History of Time",
-//     author: "Stephen Hawking",
-//     category: "Science",
-//     isbn: "978-0553380163",
-//     status: "available",
-//     description: "A popular-science book on cosmology.",
-//   },
-//   {
-//     id: 8,
-//     title: "Sapiens: A Brief History of Humankind",
-//     author: "Yuval Noah Harari",
-//     category: "History",
-//     isbn: "978-0062316097",
-//     status: "available",
-//     description:
-//       "Explores the history of humankind from evolution to modern times.",
-//   },
-// ];
-
-// Issued books data
-const issuedBooks = [
-  {
-    id: 2,
-    title: "Clean Code",
-    issueDate: "2023-10-10",
-    dueDate: "2023-10-24",
-    fine: 0,
-  },
-  {
-    id: 3,
-    title: "Design Patterns",
-    issueDate: "2023-10-05",
-    dueDate: "2023-10-19",
-    fine: 5.0,
-  },
-  {
-    id: 5,
-    title: "To Kill a Mockingbird",
-    issueDate: "2023-10-15",
-    dueDate: "2023-10-29",
-    fine: 0,
-  },
-];
 
 let books = [];
 
 // Load books into the search page
 async function loadBooks(book) {
-  const token = localStorage.getItem("token");
   if (!token) {
     alert("Unauthorized. Please login again.");
     window.location.href = "/pages/login.html";
@@ -189,11 +130,12 @@ async function loadBooks(book) {
   const data = await response.json();
   if (!data.success) {
     alert(data.message);
+    window.location.href = "/pages/login.html";
     return;
   }
   books = data.BOOKs;
   const filteredBooks = books;
-  console .log(filteredBooks);
+  console.log(filteredBooks);
 
   if (filteredBooks.length === 0) {
     bookCardsContainer.innerHTML = `
@@ -231,9 +173,7 @@ async function loadBooks(book) {
                         ${book.description}
                     </p>
                     <div class="book-actions">
-                        <button class="btn btn-outline" onclick="viewBookDetails(${
-                          book.id
-                        })">
+                        <button class="btn btn-outline" onclick="viewBookDetails(${book.id})">
                             <i class="fas fa-info-circle"></i> Details
                         </button>
                     </div>
@@ -244,61 +184,61 @@ async function loadBooks(book) {
 }
 
 // Load issued books into the table
-function loadIssuedBooks() {
-  issuedBooksTable.innerHTML = "";
+// function loadIssuedBooks() {
+//   issuedBooksTable.innerHTML = "";
 
-  if (issuedBooks.length === 0) {
-    issuedBooksTable.innerHTML = `
-                    <tr>
-                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--dark-gray);">
-                            <i class="fas fa-book" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5; display: block;"></i>
-                            <h4>No books issued</h4>
-                            <p>You haven't issued any books yet.</p>
-                        </td>
-                    </tr>
-                `;
-    return;
-  }
+//   if (issuedBooks.length === 0) {
+//     issuedBooksTable.innerHTML = `
+//                     <tr>
+//                         <td colspan="6" style="text-align: center; padding: 40px; color: var(--dark-gray);">
+//                             <i class="fas fa-book" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5; display: block;"></i>
+//                             <h4>No books issued</h4>
+//                             <p>You haven't issued any books yet.</p>
+//                         </td>
+//                     </tr>
+//                 `;
+//     return;
+//   }
 
-  issuedBooks.forEach((book) => {
-    const issueDate = new Date(book.issueDate);
-    const dueDate = new Date(book.dueDate);
-    const today = new Date();
+//   // issuedBooks.forEach((book) => {
+//   //   const issueDate = new Date(book.issueDate);
+//   //   const dueDate = new Date(book.dueDate);
+//   //   const today = new Date();
 
-    // Calculate days left
-    const timeDiff = dueDate.getTime() - today.getTime();
-    const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+//   //   // Calculate days left
+//   //   const timeDiff = dueDate.getTime() - today.getTime();
+//   //   const daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
-    // Determine status
-    let statusClass = "status-ok";
-    let statusText = `${daysLeft} days`;
+//   //   // Determine status
+//   //   let statusClass = "status-ok";
+//   //   let statusText = `${daysLeft} days`;
 
-    if (daysLeft < 0) {
-      statusClass = "status-overdue";
-      statusText = `Overdue by ${Math.abs(daysLeft)} days`;
-    } else if (daysLeft === 0) {
-      statusClass = "status-overdue";
-      statusText = "Due today";
-    } else if (daysLeft <= 3) {
-      statusClass = "status-overdue";
-      statusText = `${daysLeft} days`;
-    }
+//   //   if (daysLeft < 0) {
+//   //     statusClass = "status-overdue";
+//   //     statusText = `Overdue by ${Math.abs(daysLeft)} days`;
+//   //   } else if (daysLeft === 0) {
+//   //     statusClass = "status-overdue";
+//   //     statusText = "Due today";
+//   //   } else if (daysLeft <= 3) {
+//   //     statusClass = "status-overdue";
+//   //     statusText = `${daysLeft} days`;
+//   //   }
 
-    const fineClass = book.fine > 0 ? "fine-amount" : "no-fine";
-    const fineText = book.fine > 0 ? `$${book.fine.toFixed(2)}` : "No fine";
+//   //   const fineClass = book.fine > 0 ? "fine-amount" : "no-fine";
+//   //   const fineText = book.fine > 0 ? `$${book.fine.toFixed(2)}` : "No fine";
 
-    const row = document.createElement("tr");
-    row.innerHTML = `
-                    <td><strong>${book.title}</strong></td>
-                    <td>${issueDate.toLocaleDateString()}</td>
-                    <td>${dueDate.toLocaleDateString()}</td>
-                    <td class="${statusClass}">${statusText}</td>
-                    <td class="${fineClass}">${fineText}</td>
-                `;
+//   //   const row = document.createElement("tr");
+//   //   row.innerHTML = `
+//   //                   <td><strong>${book.title}</strong></td>
+//   //                   <td>${issueDate.toLocaleDateString()}</td>
+//   //                   <td>${dueDate.toLocaleDateString()}</td>
+//   //                   <td class="${statusClass}">${statusText}</td>
+//   //                   <td class="${fineClass}">${fineText}</td>
+//   //               `;
 
-    issuedBooksTable.appendChild(row);
-  });
-}
+//   //   issuedBooksTable.appendChild(row);
+//   // });
+// }
 
 // Search and filter books
 function filterBooks() {
@@ -455,46 +395,46 @@ issueNewBookBtn.addEventListener("click", () => {
 });
 
 // Initialize
-window.addEventListener("load", () => {
-  updateCurrentDate();
-  loadBooks();
-  loadIssuedBooks();
+// window.addEventListener("load", () => {
+//   updateCurrentDate();
+//   loadBooks();
+//   loadIssuedBooks();
 
-  // Calculate nearest due date
-  if (issuedBooks.length > 0) {
-    const today = new Date();
-    const dueDates = issuedBooks.map((book) => {
-      const dueDate = new Date(book.dueDate);
-      const timeDiff = dueDate.getTime() - today.getTime();
-      return Math.ceil(timeDiff / (1000 * 3600 * 24));
-    });
+//   // Calculate nearest due date
+//   if (issuedBooks.length > 0) {
+//     const today = new Date();
+//     const dueDates = issuedBooks.map((book) => {
+//       const dueDate = new Date(book.dueDate);
+//       const timeDiff = dueDate.getTime() - today.getTime();
+//       return Math.ceil(timeDiff / (1000 * 3600 * 24));
+//     });
 
-    const positiveDueDates = dueDates.filter((days) => days >= 0);
-    const nearestDueDate =
-      positiveDueDates.length > 0 ? Math.min(...positiveDueDates) : 0;
+//     const positiveDueDates = dueDates.filter((days) => days >= 0);
+//     const nearestDueDate =
+//       positiveDueDates.length > 0 ? Math.min(...positiveDueDates) : 0;
 
-    document.querySelector(".card-due-date h3").textContent =
-      nearestDueDate > 0 ? `${nearestDueDate} Days` : "Overdue";
-  }
+//     document.querySelector(".card-due-date h3").textContent =
+//       nearestDueDate > 0 ? `${nearestDueDate} Days` : "Overdue";
+//   }
 
-  // Calculate total fine
-  const totalFine = issuedBooks.reduce((sum, book) => sum + book.fine, 0);
-  document.querySelector(".card-fine h3").textContent = `$${totalFine.toFixed(
-    2
-  )}`;
+//   // Calculate total fine
+//   const totalFine = issuedBooks.reduce((sum, book) => sum + book.fine, 0);
+//   document.querySelector(".card-fine h3").textContent = `$${totalFine.toFixed(
+//     2
+//   )}`;
 
-  // Close sidebar when clicking outside on mobile
-  document.addEventListener("click", (e) => {
-    if (
-      window.innerWidth <= 992 &&
-      !dashboardSidebar.contains(e.target) &&
-      !mobileToggle.contains(e.target) &&
-      dashboardSidebar.classList.contains("active")
-    ) {
-      dashboardSidebar.classList.remove("active");
-    }
-  });
-});
+//   // Close sidebar when clicking outside on mobile
+//   document.addEventListener("click", (e) => {
+//     if (
+//       window.innerWidth <= 992 &&
+//       !dashboardSidebar.contains(e.target) &&
+//       !mobileToggle.contains(e.target) &&
+//       dashboardSidebar.classList.contains("active")
+//     ) {
+//       dashboardSidebar.classList.remove("active");
+//     }
+//   });
+// });
 
 // Logout Function
 
