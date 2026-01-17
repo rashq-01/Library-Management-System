@@ -93,6 +93,46 @@ async function getMyProfile(req, res) {
   }
 }
 
+async function getAdminProfile(req, res) {
+  try {
+    const userId = req.user._id;
+    const User =  await user.findById(userId);
+    if (!User) {
+      return res.status(404).json({
+        success: false,
+        message: "User not Found",
+      });
+    }
+    const totalIssuedBooks = await issuedBook.countDocuments({
+      returnDate : null
+    })
+    const totalBooks = await books.countDocuments();
+    const lateReturns = await issuedBook.countDocuments({
+      returnDate : null,
+      dueDate : {$lt : new Date()}
+    });
+    const totalStudents = await user.countDocuments({
+      role : "student"
+    });
+
+
+    return res.status(200).json({
+      success: true,
+      User : User,
+      totalIssuedBooks: totalIssuedBooks,
+      totalBooks: totalBooks,
+      totalStudents : totalStudents,
+      lateReturns : lateReturns,
+      message: "Data retrieve successful",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+}
+
 
 
 
@@ -161,4 +201,4 @@ async function updateProfile(req, res) {
   }
 }
 
-module.exports = { getMyProfile, getAllUser, updateProfile };
+module.exports = { getMyProfile, getAllUser, updateProfile, getAdminProfile};

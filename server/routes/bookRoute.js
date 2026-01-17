@@ -13,6 +13,6 @@ bookRouter.get("/getBook",auth,bookController.getAllBooks);
 bookRouter.post("/addBook",auth,roleMiddleware("admin"),bookController.addBook);
 
 // DELETE
-bookRouter.delete("/deleteBook",auth,roleMiddleware("admin"),bookController.deleteBook);
+bookRouter.delete("/admin/deleteBook",auth,roleMiddleware("admin"),bookController.deleteBook);
 
 module.exports = bookRouter;
