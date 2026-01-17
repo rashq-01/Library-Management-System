@@ -17,7 +17,7 @@
                     <div class="user-avatar">
                         <i class="fas fa-user-shield"></i>
                     </div>
-                    <div class="user-name">Admin User</div>
+                    <div class="user-name" id="adminName">Admin User</div>
                     <div class="user-role">Administrator</div>
                 </div>
             </div>
@@ -71,7 +71,7 @@
                     <div class="dashboard-cards">
                         <div class="dashboard-card card-total-books">
                             <div class="card-info">
-                                <h3>2,543</h3>
+                                <h3 id="totalBooks">2,543</h3>
                                 <p>Total Books</p>
                             </div>
                             <div class="card-icon">
@@ -81,7 +81,7 @@
                         
                         <div class="dashboard-card card-issued-books">
                             <div class="card-info">
-                                <h3>342</h3>
+                                <h3 id="totalIssuedBooks">342</h3>
                                 <p>Issued Books</p>
                             </div>
                             <div class="card-icon">
@@ -91,7 +91,7 @@
                         
                         <div class="dashboard-card card-students">
                             <div class="card-info">
-                                <h3>1,234</h3>
+                                <h3 id="totalStudents">1,234</h3>
                                 <p>Students</p>
                             </div>
                             <div class="card-icon">
@@ -101,7 +101,7 @@
                         
                         <div class="dashboard-card card-late-returns">
                             <div class="card-info">
-                                <h3>23</h3>
+                                <h3 id="lateReturns">23</h3>
                                 <p>Late Returns</p>
                             </div>
                             <div class="card-icon">
@@ -148,65 +148,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>The C++ Programming Language</td>
-                                    <td>123456</td>
-                                    <td>Programming</td>
-                                    <td>
-                                        <div class="action-buttons">
-                                        
-                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Clean Code</td>
-                                    <td>589456</td>
-                                    <td>Programming</td>
-
-                                    <td>
-                                        <div class="action-buttons">
-                                           
-                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Design Patterns</td>
-                                    <td>824694</td>
-                                    <td>Programming</td>
-
-                                    <td>
-                                        <div class="action-buttons">
-                                            
-                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>The Great Gatsby</td>
-                                    <td>341657</td>
-                                    <td>Fiction</td>
-
-                                    <td>
-                                        <div class="action-buttons">
-            
-                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>To Kill a Mockingbird</td>
-                                    <td>3646543</td>
-                                    <td>Fiction</td>
-
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
+                            <tbody id="tableBodyContainer">
                             </tbody>
                         </table>
                     </div>

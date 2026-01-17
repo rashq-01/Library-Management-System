@@ -113,6 +113,7 @@ async function loadBooks(filteredBooks) {
                     `;
       return;
     }
+    
 
     filteredBooks.forEach((book) => {
       const bookCard = document.createElement("div");

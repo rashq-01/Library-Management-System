@@ -23,6 +23,16 @@ const fineDueDate = document.getElementById("fineDueDate");
 const fineReturnDate = document.getElementById("fineReturnDate");
 const daysOverdue = document.getElementById("daysOverdue");
 const returnDateInput = document.getElementById("returnDate");
+const token = localStorage.getItem("token");
+const tableBodyContainer = document.getElementById("tableBodyContainer");
+
+
+
+
+if(!token){
+  alert("Unauthorized, Please login again");
+  window.location.href = "/pages/login.html";
+}
 
 // Set current date
 function updateCurrentDate() {
@@ -35,6 +45,136 @@ function updateCurrentDate() {
   };
   currentDateElement.textContent = now.toLocaleDateString("en-US", options);
 }
+
+// User details Load
+async function loadUserDetails(){
+  try{
+    const response = await fetch(`http://localhost:${PORT}/api/admin/me`,{
+      method : "GET",
+      headers : {
+        "Content-Type" : "application/json",
+        Authorization : `Bearer ${token}`
+      }
+    });
+    if(response.status == 401){
+      alert(response.json().message);
+      localStorage.removeItem("token");
+      window.location.href = "/pages/login.html";
+      return;
+    }
+
+    const details = await response.json();
+
+    document.getElementById("adminName").innerHTML = details.User.fullName;
+    document.getElementById("totalBooks").innerHTML = details.totalBooks;
+    document.getElementById("totalIssuedBooks").innerHTML = details.totalIssuedBooks;
+    document.getElementById("totalStudents").innerHTML = details.totalStudents;
+    document.getElementById("lateReturns").innerHTML = details.lateReturns;
+  }
+  catch(err){
+    alert(err.message);
+    window.location.href = "/pages/login.html";
+    return;
+  }
+}
+
+
+// Book Load
+async function loadAllBooks(){
+  try{
+    const response = await fetch(`http://localhost:${PORT}/api/getBook`,{
+      method : "GET",
+      headers : {
+        "Content-Type" : "application/json",
+        Authorization : `Bearer ${token}`
+      }
+    });
+    if(response.status == 401){
+      alert(response.json().message);
+      localStorage.removeItem("token");
+      window.location.href = "/pages/login.html";
+      return;
+    }
+
+    const details = await response.json();
+    console.log(details);
+    const allBooks = details.BOOKs;
+
+
+    allBooks.forEach((book)=>{
+      tableBodyContainer.innerHTML +=`                       
+                                <tr>
+                                    <td>${book.title}</td>
+                                    <td>${book.ISBNNumber}</td>
+                                    <td>${book.category}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                        
+                                            <button class="action-btn action-delete" data-isbn=${book.ISBNNumber}><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>`
+      ;
+    });
+
+  }
+  catch(err){
+    alert(err.message);
+    window.location.href = "/pages/login.html";
+    return;
+  }
+}
+
+
+// Deleting a book
+async function deleteBook(isbn){
+  try{
+    const response = await fetch(`http://localhost:${PORT}/api/admin/deleteBook`,{
+      method : "DELETE",
+      headers : {
+        "Content-Type" : "application/json",
+        Authorization : `Bearer ${token}`
+      },
+      body : JSON.stringify({
+        ISBNNumber : isbn
+      })
+    });
+    const data = await response.json();
+
+    if(!data.success){
+      alert(data.message);
+      return;
+    }
+    alert('Book deleted successfully.');
+    document.querySelector(`button[data-isbn="${isbn}"]`).closest("tr").remove();
+
+
+  }
+  catch(err){
+    alert(err.message);
+    console.log(err);
+  }
+}
+
+tableBodyContainer.addEventListener("click",async (e)=>{
+  const deleteBtn = e.target.closest(".action-delete");
+  console.log("clicked on the tableBodyContainer",deleteBtn);
+
+  if(!deleteBtn) return;
+
+  const isbn = deleteBtn.dataset.isbn;
+
+  if(!isbn)return;
+
+  if(!confirm("Are you sure your want to delete this book?")) return;
+
+  await deleteBook(isbn);
+})
+
+
+
+
+
 
 // Tab navigation
 menuItems.forEach((item) => {
@@ -149,7 +289,7 @@ saveBookBtn.addEventListener("click", async () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
       // title,ISBNNumber,author,category,publisher,publishedYear,edition,pages,language,location,description,totalCopies
       body: JSON.stringify({
@@ -225,6 +365,8 @@ document.getElementById("returnForm").addEventListener("submit", function (e) {
 // Set default dates for issue form
 window.addEventListener("load", () => {
   updateCurrentDate();
+  loadUserDetails();
+  loadAllBooks();
 
   // Set default dates for issue form
   const today = new Date();
