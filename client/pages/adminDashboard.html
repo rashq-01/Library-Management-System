@@ -41,7 +41,7 @@
                 </a>
                 
                 <div class="menu-logout">
-                    <a href="index.html" class="menu-item">
+                    <a href="index.html" class="menu-item" id="logoutBtn">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
                     </a>
@@ -167,56 +167,7 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>John Doe</td>
-                                    <td>CS2023001</td>
-                                    <td>3</td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Jane Smith</td>
-                                    <td>CS2023002</td>
-                                    <td>2</td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Robert Johnson</td>
-                                    <td>CS2023003</td>
-                                    <td>0</td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>                                    <td>Sarah Williams</td>
-                                    <td>CS2023004</td>
-                                    <td>1</td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Michael Brown</td>
-                                    <td>CS2023005</td>
-                                    <td>4</td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>
+                            <tbody id="userBodyContainer">
                             </tbody>
                         </table>
                     </div>
@@ -239,38 +190,38 @@
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="studentRollNumber">Student Roll Number</label>
-                                        <input type="text" id="studentRollNumber" class="form-control" placeholder="Enter Student Roll Number" required>
+                                        <input name="rollNumber" type="text" id="studentRollNumber" class="form-control" placeholder="Enter Student Roll Number" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="bookId">Book ISBN Number</label>
-                                        <input type="text" id="bookId" class="form-control" placeholder="Enter Book ISBN Number" required>
+                                        <input name="ISBNNumber" type="text" id="bookId" class="form-control" placeholder="Enter Book ISBN Number" required>
                                     </div>
                                 </div>
-                                
-                                
-                                
                                 <div class="form-actions">
-                                    <button type="submit" class="btn btn-success">
+                                    <button class="btn btn-success" type="submit">
                                         <i class="fas fa-book-open"></i> Issue Book
                                     </button>
                                     <button type="reset" class="btn btn-secondary">
                                         <i class="fas fa-redo"></i> Reset
                                     </button>
                                 </div>
+                                <div class="form-actions">
+                                    <h3 id="IssueDisplay" style="margin-top: 9px; color: rgb(255, 34, 34);"></h1>
+                                </div>
                             </form>
                         </div>
                         
                         <!-- Return Book Tab -->
                         <div class="tab-content" id="returnSubTab">
-                            <form>
+                            <form id="returnBook">
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="returnBookId">ISBN Number</label>
-                                        <input type="text" id="returnBookId" class="form-control" placeholder="Enter Book ISBN Number" required>
+                                        <label for="returnRollNumber">Student Roll Number</label>
+                                        <input type="text" id="returnRollId" class="form-control" placeholder="Enter Student Roll Number" required>
                                     </div>
                                     <div class="form-group">
-                                        <label for="returnRollNumber">Student Roll Number</label>
-                                        <input type="text" id="returnBookId" class="form-control" placeholder="Enter Student Roll Number" required>
+                                        <label for="returnBookId">Book ISBN Number</label>
+                                        <input type="text" id="returnBookISBN" class="form-control" placeholder="Enter Book ISBN Number" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="returnDate">Return Date</label>
@@ -286,19 +237,11 @@
                                         <i class="fas fa-check-circle"></i> Complete Return
                                     </button>
                                 </div>
+                                <div class="form-row">
+                                    <h3 id="returnDisplay" style="margin-top: 30px; color: rgb(255, 34, 34);"></h1>
+                                </div>
                             </form>
                             
-                            <!-- Fine Calculation Display -->
-                            <div class="fine-display" id="fineDisplay" style="display: none;">
-                                <h4><i class="fas fa-exclamation-triangle"></i> Fine Calculation</h4>
-                                <div class="fine-amount" id="fineAmount">$0.00</div>
-                                <div class="fine-details">
-                                    <p><strong>Book ISBN Number</strong> <span id="fineBookId">-</span></p>
-                                    <p><strong>Due Date:</strong> <span id="fineDueDate">-</span></p>
-                                    <p><strong>Return Date:</strong> <span id="fineReturnDate">-</span></p>
-                                    <p><strong>Days Overdue:</strong> <span id="daysOverdue">0</span> days</p>
-                                    <p><strong>Fine Rate:</strong> $1.00 per day</p>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -312,7 +255,6 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Transaction ID</th>
                                     <th>Student</th>
                                     <th>Book</th>
                                     <th>Type</th>
@@ -320,46 +262,13 @@
                                     <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="RecentTransaction">
                                 <tr>
-                                    <td>T001</td>
                                     <td>John Doe (CS2023001)</td>
                                     <td>The C++ Programming Language</td>
                                     <td>Issue</td>
                                     <td>2023-10-15</td>
                                     <td><span class="status-badge status-issued">Active</span></td>
-                                </tr>
-                                <tr>
-                                    <td>T002</td>
-                                    <td>Jane Smith (CS2023002)</td>
-                                    <td>Clean Code</td>
-                                    <td>Return</td>
-                                    <td>2023-10-14</td>
-                                    <td><span class="status-badge status-available">Completed</span></td>
-                                </tr>
-                                <tr>
-                                    <td>T003</td>
-                                    <td>Michael Brown (CS2023005)</td>
-                                    <td>Design Patterns</td>
-                                    <td>Issue</td>
-                                    <td>2023-10-13</td>
-                                    <td><span class="status-badge status-issued">Active</span></td>
-                                </tr>
-                                <tr>
-                                    <td>T004</td>
-                                    <td>Sarah Williams (CS2023004)</td>
-                                    <td>The Great Gatsby</td>
-                                    <td>Return</td>
-                                    <td>2023-10-12</td>
-                                    <td><span class="status-badge status-available">Completed</span></td>
-                                </tr>
-                                <tr>
-                                    <td>T005</td>
-                                    <td>Robert Johnson (CS2023003)</td>
-                                    <td>To Kill a Mockingbird</td>
-                                    <td>Issue</td>
-                                    <td>2023-10-10</td>
-                                    <td><span class="status-badge status-overdue">Overdue</span></td>
                                 </tr>
                             </tbody>
                         </table>

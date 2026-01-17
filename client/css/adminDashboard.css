@@ -426,7 +426,7 @@ body {
   font-weight: 500;
 }
 
-.status-available {
+.status-completed {
   background-color: rgba(39, 174, 96, 0.1);
   color: var(--success);
 }

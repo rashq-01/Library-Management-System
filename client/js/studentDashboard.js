@@ -103,6 +103,8 @@ async function loadBooks(filteredBooks) {
       filteredBooks = books;
     }
 
+    bookCardsContainer.innerHTML = "";
+
     if (filteredBooks.length === 0) {
       bookCardsContainer.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--dark-gray);">
@@ -283,13 +285,15 @@ function filterBooks() {
       book.ISBNNumber.includes(searchTerm);
 
     // Category filter
-    const matchesCategory = !category || book.category === category;
+    const matchesCategory = !category || book.category.toLowerCase() === category.toLowerCase();
 
     // Author filter
-    const matchesAuthor = !author || book.author === author;
+    const matchesAuthor = !author || book.author.toLowerCase() === author.toLowerCase();
 
     // Availability filter
-    const matchesAvailability = !availability || book.status === availability;
+    const isAvailable = book.totalCopies > book.issuedCopies;
+
+    const matchesAvailability = !availability || (availability === "available" && isAvailable) || (availability=="unavailable" && !isAvailable);
 
     return (
       matchesSearch && matchesCategory && matchesAuthor && matchesAvailability

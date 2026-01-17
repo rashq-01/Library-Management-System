@@ -64,7 +64,7 @@ async function addBook(req,res){
 async function getAllBooks(req,res){
     try{
 
-        const BOOKs = await book.find();
+        const BOOKs = await book.find().sort({title : 1});
 
         return res.status(200).json({
             success : true,

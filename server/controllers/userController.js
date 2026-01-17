@@ -1,6 +1,6 @@
 const user = require("../models/user.js");
 const issuedBook = require("../models/issuedBook.js");
-const books = require("../models/book.js")
+const books = require("../models/book.js");
 
 async function getMyProfile(req, res) {
   try {
@@ -82,7 +82,7 @@ async function getMyProfile(req, res) {
       nearestDueBook: nearestDueBook,
       totalFinePending: totalFinePending,
       totalAvailableBooks: totalAvailableBooks,
-      ISSUEDBOOKs : ISSUEDBOOKs,
+      ISSUEDBOOKs: ISSUEDBOOKs,
       message: "Data retrieve successful",
     });
   } catch (err) {
@@ -96,7 +96,7 @@ async function getMyProfile(req, res) {
 async function getAdminProfile(req, res) {
   try {
     const userId = req.user._id;
-    const User =  await user.findById(userId);
+    const User = await user.findById(userId);
     if (!User) {
       return res.status(404).json({
         success: false,
@@ -104,25 +104,24 @@ async function getAdminProfile(req, res) {
       });
     }
     const totalIssuedBooks = await issuedBook.countDocuments({
-      returnDate : null
-    })
+      returnDate: null,
+    });
     const totalBooks = await books.countDocuments();
     const lateReturns = await issuedBook.countDocuments({
-      returnDate : null,
-      dueDate : {$lt : new Date()}
+      returnDate: null,
+      dueDate: { $lt: new Date() },
     });
     const totalStudents = await user.countDocuments({
-      role : "student"
+      role: "student",
     });
-
 
     return res.status(200).json({
       success: true,
-      User : User,
+      User: User,
       totalIssuedBooks: totalIssuedBooks,
       totalBooks: totalBooks,
-      totalStudents : totalStudents,
-      lateReturns : lateReturns,
+      totalStudents: totalStudents,
+      lateReturns: lateReturns,
       message: "Data retrieve successful",
     });
   } catch (err) {
@@ -133,9 +132,6 @@ async function getAdminProfile(req, res) {
   }
 }
 
-
-
-
 async function getAllUser(req, res) {
   try {
     if (req.user.role != "admin") {
@@ -145,13 +141,131 @@ async function getAllUser(req, res) {
       });
     }
 
-
-    const Users = await user.find().select("-password");
+    const Users = await user.aggregate([
+      {
+        $match: {
+          role: "student",
+        },
+      },
+      {
+        $lookup: {
+          from: "issuedbooks", // collection name (plural, lowercase)
+          localField: "rollNumber",
+          foreignField: "rollNumber",
+          as: "issuedBooks",
+        },
+      },
+      {
+        $addFields: {
+          issuedBookCount: { $size: "$issuedBooks" },
+        },
+      },
+      {
+        $project: {
+          password: 0,
+          issuedBooks: 0, // hide full issuedBooks array
+        },
+      },
+      {
+        $sort: { fullName: 1 },
+      },
+    ]);
 
     return res.status(200).json({
       success: true,
       Users: Users,
       message: "All users fetched successfully",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+}
+async function recentTransaction(req, res) {
+  try {
+    if (req.user.role != "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Admin only.",
+      });
+    }
+
+    const recentTransactions = await issuedBook.aggregate([
+      // Sorting latest first
+      { $sort: { createdAt: -1 } },
+
+      // Limiting recent transactions (e.g. last 5)
+      { $limit: 5 },
+
+      // Joining user data
+      {
+        $lookup: {
+          from: "users",
+          localField: "rollNumber",
+          foreignField: "rollNumber",
+          as: "student",
+        },
+      },
+      { $unwind: "$student" },
+
+      // Joining book data
+      {
+        $lookup: {
+          from: "books",
+          localField: "bookId",
+          foreignField: "_id",
+          as: "book",
+        },
+      },
+      { $unwind: "$book" },
+
+      // Computing derived fields
+      {
+        $addFields: {
+          transactionType: {
+            $cond: [{ $eq: ["$returnDate", null] }, "Issue", "Return"],
+          },
+          status: {
+            $cond: [
+              { $ne: ["$returnDate", null] },
+              "Completed",
+              {
+                $cond: [{ $lt: ["$dueDate", new Date()] }, "Overdue", "Active"],
+              },
+            ],
+          },
+          transactionDate: {
+            $cond: [
+              { $eq: ["$returnDate", null] },
+              "$issueDate",
+              "$returnDate",
+            ],
+          },
+        },
+      },
+
+      // Shaping final output
+      {
+        $project: {
+          _id: 1,
+          transactionId: "$_id",
+          student: {
+            $concat: ["$student.fullName", " (", "$student.rollNumber", ")"],
+          },
+          bookTitle: "$book.title",
+          transactionType: 1,
+          transactionDate: 1,
+          status: 1,
+        },
+      },
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      recentTransactions: recentTransactions,
+      message: "All Transactions fetched successfully",
     });
   } catch (err) {
     return res.status(500).json({
@@ -201,4 +315,4 @@ async function updateProfile(req, res) {
   }
 }
 
-module.exports = { getMyProfile, getAllUser, updateProfile, getAdminProfile};
+module.exports = { getMyProfile, getAllUser, updateProfile, getAdminProfile, recentTransaction};

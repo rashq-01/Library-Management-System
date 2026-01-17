@@ -46,8 +46,8 @@ function updateCurrentDate() {
   currentDateElement.textContent = now.toLocaleDateString("en-US", options);
 }
 
-// User details Load
-async function loadUserDetails(){
+// Admin details Load
+async function loadAdminDetails(){
   try{
     const response = await fetch(`http://localhost:${PORT}/api/admin/me`,{
       method : "GET",
@@ -78,7 +78,6 @@ async function loadUserDetails(){
   }
 }
 
-
 // Book Load
 async function loadAllBooks(){
   try{
@@ -97,7 +96,6 @@ async function loadAllBooks(){
     }
 
     const details = await response.json();
-    console.log(details);
     const allBooks = details.BOOKs;
 
 
@@ -113,6 +111,94 @@ async function loadAllBooks(){
                                             <button class="action-btn action-delete" data-isbn=${book.ISBNNumber}><i class="fas fa-trash"></i> Delete</button>
                                         </div>
                                     </td>
+                                </tr>`
+      ;
+    });
+
+  }
+  catch(err){
+    alert(err.message);
+    window.location.href = "/pages/login.html";
+    return;
+  }
+}
+
+
+// All Users Load
+async function loadAllUsers(){
+  try{
+    const response = await fetch(`http://localhost:${PORT}/api/admin/allUser`,{
+      method : "GET",
+      headers : {
+        "Content-Type" : "application/json",
+        Authorization : `Bearer ${token}`
+      }
+    });
+    if(response.status == 401){
+      alert(response.json().message);
+      localStorage.removeItem("token");
+      window.location.href = "/pages/login.html";
+      return;
+    }
+
+    const details = await response.json();
+    const allUsers = details.Users;
+
+
+    allUsers.forEach((usr)=>{
+      userBodyContainer.innerHTML +=`                       
+                                 <tr>
+                                    <td>${usr.fullName}</td>
+                                    <td>${usr.rollNumber}</td>
+                                    <td>${usr.issuedBookCount}</td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
+                                        </div>
+                                    </td>
+                                </tr>`
+      ;
+    });
+
+  }
+  catch(err){
+    alert(err.message);
+    window.location.href = "/pages/login.html";
+    return;
+  }
+}
+
+
+// All Users Load
+async function recentTransaction(){
+  try{
+    const response = await fetch(`http://localhost:${PORT}/api/admin/recentTransaction`,{
+      method : "GET",
+      headers : {
+        "Content-Type" : "application/json",
+        Authorization : `Bearer ${token}`
+      }
+    });
+    if(response.status == 401){
+      alert(response.json().message);
+      localStorage.removeItem("token");
+      window.location.href = "/pages/login.html";
+      return;
+    }
+
+    const details = await response.json();
+    const allRecentTransaction = details.recentTransactions;
+
+
+    allRecentTransaction.forEach((tran)=>{
+      const date = new Date(tran.transactionDate).toLocaleDateString();
+      RecentTransaction.innerHTML +=`                       
+                                 <tr>
+                                    <td>${tran.student}</td>
+                                    <td>${tran.bookTitle}</td>
+                                    <td>${tran.transactionType}</td>
+                                    <td>${date}</td>
+                                    <td><span class="status-badge status-${tran.status.toLowerCase()}">${tran.status}</span></td>
                                 </tr>`
       ;
     });
@@ -171,6 +257,126 @@ tableBodyContainer.addEventListener("click",async (e)=>{
   await deleteBook(isbn);
 })
 
+
+
+// Issuing a book
+async function issueBook(){
+  try{
+    const rollNumber = document.getElementById("studentRollNumber").value;
+    const ISBNNumber = document.getElementById("bookId").value;
+    const response = await fetch(`http://localhost:${PORT}/api/admin/issue`,{
+      method : "POST",
+      headers : {
+        "Content-Type" : "application/json",
+        Authorization : `Bearer ${token}`
+      },
+      body : JSON.stringify({
+        ISBNNumber : ISBNNumber,
+        rollNumber : rollNumber
+      })
+    });
+    const data = await response.json();
+    document.getElementById("IssueDisplay").innerHTML = data.message;
+
+  }
+  catch(err){
+    alert(err.message);
+    console.log(err);
+  }
+}
+const issueBtn = document.getElementById("issueForm");
+issueBtn.addEventListener("submit",async (e)=>{
+  e.preventDefault();
+  await issueBook();
+})
+
+
+// Calculating fine
+async function calculateFine(){
+  try{
+    const rollNumber = document.getElementById("returnRollId").value;
+    const ISBNNumber = document.getElementById("returnBookISBN").value;
+    const returnDate = document.getElementById("returnDate").value;
+    console.log(returnDate);
+    const response = await fetch(`http://localhost:${PORT}/api/admin/calculate`,{
+      method : "POST",
+      headers : {
+        "Content-Type" : "application/json",
+        Authorization : `Bearer ${token}`
+      },
+      body : JSON.stringify({
+        ISBNNumber : ISBNNumber,
+        rollNumber : rollNumber,
+        returnDate : returnDate
+      })
+    });
+    const data = await response.json();
+    console.log(data);
+
+    if(!data.success){
+      alert(data.message);
+
+    }
+    else{
+      document.getElementById("returnDisplay").innerHTML = `Fine Amount : <i class="fa-solid fa-indian-rupee-sign"></i> ${data.fine}`
+    }
+
+
+  }
+  catch(err){
+    alert(err.message);
+    console.log(err);
+  }
+}
+
+calculateFineBtn.addEventListener("click" ,async (e)=>{
+  e.preventDefault();
+  await calculateFine();
+})
+
+
+// Completing Return
+async function completeReturn(){
+  try{
+    const rollNumber = document.getElementById("returnRollId").value;
+    const ISBNNumber = document.getElementById("returnBookISBN").value;
+    const returnDate = document.getElementById("returnDate").value;
+    console.log(returnDate);
+    const response = await fetch(`http://localhost:${PORT}/api/admin/return`,{
+      method : "POST",
+      headers : {
+        "Content-Type" : "application/json",
+        Authorization : `Bearer ${token}`
+      },
+      body : JSON.stringify({
+        ISBNNumber : ISBNNumber,
+        rollNumber : rollNumber,
+        returnDate : returnDate
+      })
+    });
+    const data = await response.json();
+    console.log(data);
+
+    if(!data.success){
+      alert(data.message);
+
+    }
+    else{
+      document.getElementById("returnDisplay").innerHTML = `Return successful and Fine Amount : <i class="fa-solid fa-indian-rupee-sign"></i> ${data.fine}`
+    }
+
+
+  }
+  catch(err){
+    alert(err.message);
+    console.log(err);
+  }
+}
+
+document.getElementById("returnForm").addEventListener("click" ,async (e)=>{
+  e.preventDefault();
+  await completeReturn();
+})
 
 
 
@@ -351,22 +557,14 @@ saveBookBtn.addEventListener("click", async () => {
 //   fineDisplay.style.display = "block";
 // });
 
-document.getElementById("returnForm").addEventListener("submit", function (e) {
-  e.preventDefault();
-  const bookId = document.getElementById("returnBookId").value;
-
-  if (bookId) {
-    alert(`Book ${bookId} returned successfully!`);
-    this.reset();
-    fineDisplay.style.display = "none";
-  }
-});
 
 // Set default dates for issue form
 window.addEventListener("load", () => {
   updateCurrentDate();
-  loadUserDetails();
+  loadAdminDetails();
   loadAllBooks();
+  loadAllUsers();
+  recentTransaction();
 
   // Set default dates for issue form
   const today = new Date();
@@ -431,4 +629,18 @@ document.addEventListener("keydown", (e) => {
       closeModalBook();
     }
   }
+});
+
+
+// Logout Function
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+logoutBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+
+  window.location.href = "/index.html";
 });

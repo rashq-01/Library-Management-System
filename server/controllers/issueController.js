@@ -66,9 +66,9 @@ async function issueBook(req,res){
 
 async function returnBook(req,res){
   try{
-    const {ISBNNumber,rollNumber} = req.body;
+    const {ISBNNumber,rollNumber,returnDate} = req.body;
 
-    if(!ISBNNumber || !rollNumber){
+    if(!ISBNNumber || !rollNumber || !returnDate){
       return res.status(400).json({
         success : false,
         message : "All fields required"
@@ -80,7 +80,7 @@ async function returnBook(req,res){
     if(!ISSUEDBOOk){
       return res.status(404).json({
         success : false,
-        message : "Issued Book not found."
+        message : `Book (${ISBNNumber}) is not issued to the user (${rollNumber})`
       });
     }
     const BOOK = await book.findOne({ISBNNumber});
@@ -93,11 +93,11 @@ async function returnBook(req,res){
         message : "Book is not available"
       });
     }
-    ISSUEDBOOk.returnDate = new Date();
+    ISSUEDBOOk.returnDate = new Date(returnDate + "T00:00:00");
     ISSUEDBOOk.fine = 0;
     if(ISSUEDBOOk.returnDate > ISSUEDBOOk.dueDate){
-      let lateDays = ISSUEDBOOk.returnDate-ISSUEDBOOk.dueDate;
-      lateDays = Math.ceil(lateDays/(1000*60*60*24));
+      let lateMs = ISSUEDBOOk.returnDate-ISSUEDBOOk.dueDate;
+      let lateDays = Math.ceil(lateMs/(1000*60*60*24));
       ISSUEDBOOk.fine = lateDays * 30; //Fine Rs.30 per day
     }
     await ISSUEDBOOk.save();
@@ -110,6 +110,53 @@ async function returnBook(req,res){
       success : true,
       message : "Return Successful",
       fine : ISSUEDBOOk.fine
+    });
+
+
+  }
+  catch(err){
+    console.error(err);
+    return res.status(500).json({
+      success : false,
+      message : err.message
+    });
+  }
+  
+}
+
+async function fineCalculation(req,res){
+  try{
+    const {ISBNNumber,rollNumber,returnDate} = req.body;
+
+    if(!ISBNNumber || !rollNumber || !returnDate){
+      return res.status(400).json({
+        success : false,
+        message : "All fields required"
+      });
+    }
+
+    const ISSUEDBOOk = await issuedBook.findOne({ISBNNumber,rollNumber, returnDate:null});
+
+    if(!ISSUEDBOOk){
+      return res.status(404).json({
+        success : false,
+        message : `Book (${ISBNNumber}) is not issued to the user (${rollNumber})`
+      });
+    }
+    let RETURNDATE= new Date(returnDate + "T00:00:00");
+    let FINE = 0;
+    if(RETURNDATE > ISSUEDBOOk.dueDate){
+      let lateMs = RETURNDATE-ISSUEDBOOk.dueDate;
+      let lateDays = Math.ceil(lateMs/(1000*60*60*24));
+      FINE= lateDays * 30; //Fine Rs.30 per day
+    }
+
+
+
+    return res.status(200).json({
+      success : true,
+      message : "Return Successful",
+      fine : FINE
     });
 
 
@@ -153,4 +200,4 @@ async function getMyIssuedBooks(req,res){
 
 
 
-module.exports = {issueBook,returnBook,getMyIssuedBooks};
+module.exports = {issueBook,returnBook,getMyIssuedBooks, fineCalculation};
