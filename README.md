@@ -95,22 +95,22 @@ The backend follows **MVC architecture**:
 
 ## 📂 Project Structure
 
-Library-Management-System/
-│
-├── client/ # Frontend
-│
-├── server/ # Backend
-│ ├── models/ # MongoDB schemas
-│ ├── routes/ # API routes
-│ ├── controllers/ # Business logic
-│ ├── middleware/ # Auth & error middleware
-│ ├── config/ # DB configuration
-│ └── server.js # Server entry point
-│
-├── screenshots/
-├── package.json
-├── .env
-└── README.md
+Library-Management-System/<br>
+│<br>
+├── client/ # Frontend<br>
+│<br>
+├── server/ # Backend<br>
+│ ├── models/ # MongoDB schemas<br>
+│ ├── routes/ # API routes<br>
+│ ├── controllers/ # Business logic<br>
+│ ├── middleware/ # Auth & error middleware<br>
+│ ├── config/ # DB configuration<br>
+│ └── server.js # Server entry point<br>
+│<br>
+├── screenshots/<br>
+├── package.json<br>
+├── .env<br>
+└── README.md<br>
 
 
 
@@ -211,17 +211,17 @@ cd Library-Management-System
 npm install
 
 ### 3️⃣ Setup Environment Variables
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
-
-Example : 
-           PORT=5000
-           MONGO_URI=mongodb://127.0.0.1:27017/libraryDB
-           JWT_SECRET=library_secret
+PORT=5000<br>
+MONGO_URI=your_mongodb_connection_string<br>
+JWT_SECRET=your_secret_key<br>
+<br>
+Example : <br>
+           PORT=5000<br>
+           MONGO_URI=mongodb://127.0.0.1:27017/libraryDB<br>
+           JWT_SECRET=library_secret<br>
 
 
 ### 4️⃣ Start the Backend Server
-  npm install
-  npm start
-  Backend will run at: http://localhost:5000
+  npm install<br>
+  npm start<br>
+  Backend will run at: http://localhost:5000<br>
