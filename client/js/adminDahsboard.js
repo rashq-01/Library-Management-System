@@ -4,24 +4,19 @@ const PORT = 5000;
 const dashboardSidebar = document.getElementById("dashboardSidebar");
 const mobileToggle = document.getElementById("mobileToggle");
 const menuItems = document.querySelectorAll(".menu-item");
-const tabs = document.querySelectorAll(".tab");
 const subtabs = document.querySelectorAll("[data-subtab]");
 const currentDateElement = document.getElementById("currentDate");
+const userBodyContainer = document.getElementById("userBodyContainer");
+const recentTransaction = document.getElementById("RecentTransaction");
+
+
 
 // Modal Elements
 const addBookModal = document.getElementById("addBookModal");
 const addBookBtn = document.getElementById("addBookBtn");
-const closeModalBtn = document.getElementsByClassName("closeModalBtn");
-const cancelModalBtn = document.getElementsByClassName("cancelModalBtn");
 const saveBookBtn = document.getElementById("saveBookBtn");
 // Issue/Return Elements
 const calculateFineBtn = document.getElementById("calculateFineBtn");
-const fineDisplay = document.getElementById("fineDisplay");
-const fineAmount = document.getElementById("fineAmount");
-const fineBookId = document.getElementById("fineBookId");
-const fineDueDate = document.getElementById("fineDueDate");
-const fineReturnDate = document.getElementById("fineReturnDate");
-const daysOverdue = document.getElementById("daysOverdue");
 const returnDateInput = document.getElementById("returnDate");
 const token = localStorage.getItem("token");
 const tableBodyContainer = document.getElementById("tableBodyContainer");
@@ -98,22 +93,23 @@ async function loadAllBooks(){
     const details = await response.json();
     const allBooks = details.BOOKs;
 
-
+    let html = "";
     allBooks.forEach((book)=>{
-      tableBodyContainer.innerHTML +=`                       
-                                <tr>
-                                    <td>${book.title}</td>
-                                    <td>${book.ISBNNumber}</td>
-                                    <td>${book.category}</td>
-                                    <td>
-                                        <div class="action-buttons">
-                                        
-                                            <button class="action-btn action-delete" data-isbn=${book.ISBNNumber}><i class="fas fa-trash"></i> Delete</button>
-                                        </div>
-                                    </td>
-                                </tr>`
+      html +=`                       
+               <tr>
+                   <td>${book.title}</td>
+                   <td>${book.ISBNNumber}</td>
+                   <td>${book.category}</td>
+                   <td>
+                       <div class="action-buttons">
+                       
+                           <button class="action-btn action-delete" data-isbn=${book.ISBNNumber}><i class="fas fa-trash"></i> Delete</button>
+                       </div>
+                   </td>
+               </tr>`
       ;
     });
+    tableBodyContainer.innerHTML = html;
 
   }
   catch(err){
@@ -192,7 +188,7 @@ async function recentTransaction(){
 
     allRecentTransaction.forEach((tran)=>{
       const date = new Date(tran.transactionDate).toLocaleDateString();
-      RecentTransaction.innerHTML +=`                       
+      recentTransaction.innerHTML +=`                       
                                  <tr>
                                     <td>${tran.student}</td>
                                     <td>${tran.bookTitle}</td>
@@ -244,7 +240,6 @@ async function deleteBook(isbn){
 
 tableBodyContainer.addEventListener("click",async (e)=>{
   const deleteBtn = e.target.closest(".action-delete");
-  console.log("clicked on the tableBodyContainer",deleteBtn);
 
   if(!deleteBtn) return;
 
@@ -297,7 +292,6 @@ async function calculateFine(){
     const rollNumber = document.getElementById("returnRollId").value;
     const ISBNNumber = document.getElementById("returnBookISBN").value;
     const returnDate = document.getElementById("returnDate").value;
-    console.log(returnDate);
     const response = await fetch(`http://localhost:${PORT}/api/admin/calculate`,{
       method : "POST",
       headers : {
@@ -311,7 +305,6 @@ async function calculateFine(){
       })
     });
     const data = await response.json();
-    console.log(data);
 
     if(!data.success){
       alert(data.message);
@@ -341,7 +334,6 @@ async function completeReturn(){
     const rollNumber = document.getElementById("returnRollId").value;
     const ISBNNumber = document.getElementById("returnBookISBN").value;
     const returnDate = document.getElementById("returnDate").value;
-    console.log(returnDate);
     const response = await fetch(`http://localhost:${PORT}/api/admin/return`,{
       method : "POST",
       headers : {
@@ -355,7 +347,6 @@ async function completeReturn(){
       })
     });
     const data = await response.json();
-    console.log(data);
 
     if(!data.success){
       alert(data.message);
@@ -384,7 +375,6 @@ document.getElementById("returnForm").addEventListener("click" ,async (e)=>{
 saveBookBtn.addEventListener("click", async () => {
   try {
     const token = localStorage.getItem("token");
-    console.log(token);
     if (!token) {
       alert("Unauthorized. Please Login");
       window.location.href = "/pages/login.html";
@@ -414,7 +404,6 @@ saveBookBtn.addEventListener("click", async () => {
     });
 
     const data = await response.json();
-    console.log(data);
     alert(data.message);
   } catch (err) {
     console.error(err.message);
@@ -452,14 +441,6 @@ menuItems.forEach((item) => {
     }
   });
 });
-document.querySelectorAll(".cancelModalBtn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    addBookModal.classList.remove("active");
-
-    document.getElementById("addBookForm")?.reset();
-  });
-});
-
 // Sub-tab navigation (Issue/Return)
 subtabs.forEach((tab) => {
   tab.addEventListener("click", function () {
@@ -479,10 +460,6 @@ subtabs.forEach((tab) => {
     // Show selected subtab
     document.getElementById(`${subtabToShow}SubTab`).classList.add("active");
 
-    // Reset fine display when switching to return tab
-    if (subtabToShow === "return") {
-      fineDisplay.style.display = "none";
-    }
   });
 });
 
@@ -501,20 +478,12 @@ const closeModalBook = () => {
   document.getElementById("addBookForm").reset();
 };
 
-// Close buttons (X)
-Array.from(closeModalBtn).forEach((btn) => {
-  btn.addEventListener("click", () => {
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("closeModalBtn") ||
+      e.target.classList.contains("cancelModalBtn")) {
     addBookModal.classList.remove("active");
     document.getElementById("addBookForm")?.reset();
-  });
-});
-
-// Cancel buttons
-Array.from(document.querySelectorAll("#cancelModalBtn")).forEach((btn) => {
-  btn.addEventListener("click", () => {
-    addBookModal.classList.remove("active");
-    document.getElementById("addBookForm")?.reset();
-  });
+  }
 });
 
 // Close modal when clicking outside
