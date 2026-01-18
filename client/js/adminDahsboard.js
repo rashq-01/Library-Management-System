@@ -541,6 +541,7 @@ window.addEventListener("load", () => {
   if (returnDateInput) {
     returnDateInput.value = today.toISOString().split("T")[0];
   }
+});
 
 // Closing sidebar when clicking outside on mobile
 document.addEventListener("click", (e) => {
