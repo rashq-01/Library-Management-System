@@ -189,7 +189,7 @@ async function recentTransaction(){
     const details = await response.json();
     const allRecentTransaction = details.recentTransactions;
 
-
+    RecentTransaction.innerHTML = "";
     allRecentTransaction.forEach((tran)=>{
       const date = new Date(tran.transactionDate).toLocaleDateString();
       RecentTransaction.innerHTML +=`                       
@@ -277,6 +277,7 @@ async function issueBook(){
     });
     const data = await response.json();
     document.getElementById("IssueDisplay").innerHTML = data.message;
+    recentTransaction();
 
   }
   catch(err){
@@ -363,6 +364,7 @@ async function completeReturn(){
     }
     else{
       document.getElementById("returnDisplay").innerHTML = `Return successful and Fine Amount : <i class="fa-solid fa-indian-rupee-sign"></i> ${data.fine}`
+      recentTransaction();
     }
 
 
