@@ -463,23 +463,15 @@ document.querySelectorAll(".cancelModalBtn").forEach((btn) => {
 // Sub-tab navigation (Issue/Return)
 subtabs.forEach((tab) => {
   tab.addEventListener("click", function () {
-    // Remove active class from all subtabs
     subtabs.forEach((t) => t.classList.remove("active"));
-    // Add active class to clicked subtab
     this.classList.add("active");
-
-    // Get subtab to show
     const subtabToShow = this.getAttribute("data-subtab");
 
-    // Hide all subtab contents
     document.querySelectorAll("#issueReturnTab .tab-content").forEach((tab) => {
       tab.classList.remove("active");
     });
 
-    // Show selected subtab
     document.getElementById(`${subtabToShow}SubTab`).classList.add("active");
-
-    // Reset fine display when switching to return tab
     if (subtabToShow === "return") {
       fineDisplay.style.display = "none";
     }
