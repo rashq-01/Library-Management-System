@@ -7,6 +7,7 @@ const bookRouter = express.Router();
 
 // GET
 bookRouter.get("/getBook",auth,bookController.getAllBooks);
+bookRouter.get("/bookCatalog",bookController.getAllBooks);
 
 
 // POST

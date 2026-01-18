@@ -380,6 +380,49 @@ document.getElementById("returnForm").addEventListener("click" ,async (e)=>{
 
 
 
+// Save book  // API call
+saveBookBtn.addEventListener("click", async () => {
+  try {
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (!token) {
+      alert("Unauthorized. Please Login");
+      window.location.href = "/pages/login.html";
+      return;
+    }
+    const response = await fetch(`http://localhost:${PORT}/api/addBook`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      // title,ISBNNumber,author,category,publisher,publishedYear,edition,pages,language,location,description,totalCopies
+      body: JSON.stringify({
+        title: document.getElementById("newBookTitle").value.trim(),
+        ISBNNumber: document.getElementById("isbnNo").value.trim(),
+        author: document.getElementById("newBookAuthor").value.trim(),
+        category: document.getElementById("newBookCategory").value.trim(),
+        publisher: document.getElementById("publisher").value.trim(),
+        publishedYear: Number(document.getElementById("publishedYear").value),
+        edition: document.getElementById("edition").value.trim(),
+        pages: Number(document.getElementById("page").value),
+        language: document.getElementById("language").value.trim(),
+        location: document.getElementById("location").value.trim(),
+        description: document.getElementById("description").value.trim(),
+        totalCopies: Number(document.getElementById("newBookCopies").value),
+      }),
+    });
+
+    const data = await response.json();
+    console.log(data);
+    alert(data.message);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+
+
 
 
 // Tab navigation
@@ -466,7 +509,7 @@ Array.from(closeModalBtn).forEach((btn) => {
   });
 });
 
-// Cancel buttons (⚠️ you used SAME ID twice – see note below)
+// Cancel buttons
 Array.from(document.querySelectorAll("#cancelModalBtn")).forEach((btn) => {
   btn.addEventListener("click", () => {
     addBookModal.classList.remove("active");
@@ -480,82 +523,6 @@ addBookModal.addEventListener("click", (e) => {
     closeModalBook();
   }
 });
-
-// Save book  // API call
-saveBookBtn.addEventListener("click", async () => {
-  try {
-    const token = localStorage.getItem("token");
-    console.log(token);
-    if (!token) {
-      alert("Unauthorized. Please Login");
-      window.location.href = "/pages/login.html";
-      return;
-    }
-    const response = await fetch(`http://localhost:${PORT}/api/addBook`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      // title,ISBNNumber,author,category,publisher,publishedYear,edition,pages,language,location,description,totalCopies
-      body: JSON.stringify({
-        title: document.getElementById("newBookTitle").value.trim(),
-        ISBNNumber: document.getElementById("isbnNo").value.trim(),
-        author: document.getElementById("newBookAuthor").value.trim(),
-        category: document.getElementById("newBookCategory").value.trim(),
-        publisher: document.getElementById("publisher").value.trim(),
-        publishedYear: Number(document.getElementById("publishedYear").value),
-        edition: document.getElementById("edition").value.trim(),
-        pages: Number(document.getElementById("page").value),
-        language: document.getElementById("language").value.trim(),
-        location: document.getElementById("location").value.trim(),
-        description: document.getElementById("description").value.trim(),
-        totalCopies: Number(document.getElementById("newBookCopies").value),
-      }),
-    });
-
-    const data = await response.json();
-    console.log(data);
-    alert(data.message);
-  } catch (err) {
-    console.error(err.message);
-  }
-});
-
-// // Calculate fine
-// calculateFineBtn.addEventListener("click", () => {
-//   const bookId = document.getElementById("returnBookId").value;
-//   const returnDate = document.getElementById("returnDate").value;
-
-//   if (!bookId || !returnDate) {
-//     alert("Please enter Book ID and Return Date");
-//     return;
-//   }
-
-//   // Mock data - in real app, you would fetch due date from database
-//   const dueDate = "2023-10-20"; // Mock due date
-//   const returnDateObj = new Date(returnDate);
-//   const dueDateObj = new Date(dueDate);
-
-//   // Calculate days overdue
-//   const timeDiff = returnDateObj.getTime() - dueDateObj.getTime();
-//   const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-//   // Calculate fine
-//   let fine = 0;
-//   if (daysDiff > 0) {
-//     fine = daysDiff * 1.0; // $1 per day
-//   }
-
-//   // Display fine
-//   fineBookId.textContent = bookId;
-//   fineDueDate.textContent = dueDate;
-//   fineReturnDate.textContent = returnDate;
-//   daysOverdue.textContent = daysDiff > 0 ? daysDiff : 0;
-//   fineAmount.textContent = `$${fine.toFixed(2)}`;
-
-//   fineDisplay.style.display = "block";
-// });
 
 
 // Set default dates for issue form
@@ -575,35 +542,7 @@ window.addEventListener("load", () => {
     returnDateInput.value = today.toISOString().split("T")[0];
   }
 
-  // Add click handlers for edit/delete buttons
-  document.querySelectorAll(".action-edit").forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const row = this.closest("tr");
-      const bookId = row.cells[0].textContent;
-      const bookName = row.cells[1].textContent;
-      alert(`Edit book: ${bookName} (ID: ${bookId})`);
-    });
-  });
-
-  document.querySelectorAll(".action-delete").forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const row = this.closest("tr");
-      const bookId = row.cells[0].textContent;
-      const bookName = row.cells[1].textContent;
-
-      if (
-        confirm(
-          `Are you sure you want to delete "${bookName}" (ID: ${bookId})?`
-        )
-      ) {
-        alert(`Book "${bookName}" deleted successfully!`);
-        // In a real app, you would remove the row from the table
-      }
-    });
-  });
-});
-
-// Close sidebar when clicking outside on mobile
+// Closing sidebar when clicking outside on mobile
 document.addEventListener("click", (e) => {
   if (
     window.innerWidth <= 992 &&
