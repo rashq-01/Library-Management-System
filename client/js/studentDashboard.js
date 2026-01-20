@@ -149,51 +149,59 @@ async function loadBooks(filteredBooks) {
 
       bookCardsContainer.appendChild(bookCard);
     });
-  } catch (err) {}
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
 }
 
 async function loadUserDetails() {
-  const response = await fetch(`http://localhost:${PORT}/api/me`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  if (response.status == 401) {
-    alert(response.json().message);
-    localStorage.removeItem("token");
-    window.location.href = "/pages/login.html";
-    return;
-  }
-  const details = await response.json();
-  console.log(details);
-  document.getElementById("fullName").innerHTML = details.user.fullName;
-  document.getElementById("rollNumber").innerHTML =
-    `Roll No : ${details.user.rollNumber.toUpperCase()}`;
-  document.getElementById("fullName").innerHTML = details.user.fullName;
-  document.getElementById("rollNumber").innerHTML =
-    `Roll No: ${details.user.rollNumber.toUpperCase()}`;
-  document.getElementById("totalIssuedBooks").innerHTML =
-  details.totalIssuedBooks;
-  const today = new Date();
-  let daysLeft = -1;
+  try {
+    const response = await fetch(`http://localhost:${PORT}/api/me`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status == 401) {
+      alert(response.json().message);
+      localStorage.removeItem("token");
+      window.location.href = "/pages/login.html";
+      return;
+    }
+    const details = await response.json();
+    document.getElementById("fullName").innerHTML = details.user.fullName;
+    document.getElementById("rollNumber").innerHTML =
+      `Roll No : ${details.user.rollNumber.toUpperCase()}`;
+    document.getElementById("fullName").innerHTML = details.user.fullName;
+    document.getElementById("rollNumber").innerHTML =
+      `Roll No: ${details.user.rollNumber.toUpperCase()}`;
+    document.getElementById("totalIssuedBooks").innerHTML =
+      details.totalIssuedBooks;
+    const today = new Date();
+    let daysLeft = -1;
 
-  if (details.nearestDueBook && details.nearestDueBook.dueDate) {
-    daysLeft = Math.ceil(
-      (new Date(details.nearestDueBook.dueDate) - today) /
-        (1000 * 60 * 60 * 24),
-    );
-  }
+    if (details.nearestDueBook && details.nearestDueBook.dueDate) {
+      daysLeft = Math.ceil(
+        (new Date(details.nearestDueBook.dueDate) - today) /
+          (1000 * 60 * 60 * 24),
+      );
+    }
 
-  document.getElementById("nearestDueDate").innerHTML = `${daysLeft>=0 ? daysLeft+" Days" : " No Due"}`;
-  document.getElementById("totalFine").innerHTML =
-    `<i class="fa-solid fa-indian-rupee-sign"></i> ${details.totalFinePending}`;
-  document.getElementById("totalAvailableBooks").innerHTML =
-    details.totalAvailableBooks;
-  let headName = details.user.fullName;
-  let firstName = headName?.trim().split(/\s+/)[0] || "";
-  document.getElementById("headName").innerHTML = firstName;
+    document.getElementById("nearestDueDate").innerHTML =
+      `${daysLeft >= 0 ? daysLeft + " Days" : " No Due"}`;
+    document.getElementById("totalFine").innerHTML =
+      `<i class="fa-solid fa-indian-rupee-sign"></i> ${details.totalFinePending}`;
+    document.getElementById("totalAvailableBooks").innerHTML =
+      details.totalAvailableBooks;
+    let headName = details.user.fullName;
+    let firstName = headName?.trim().split(/\s+/)[0] || "";
+    document.getElementById("headName").innerHTML = firstName;
+  } catch (err) {
+    console.log(err)
+    throw err;
+  }
 }
 
 // Load issued books into the table
@@ -274,7 +282,10 @@ async function loadIssuedBooks() {
 
       issuedBooksTable.appendChild(row);
     });
-  } catch (err) {}
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
 }
 
 // Search and filter books
@@ -424,42 +435,40 @@ searchInput.addEventListener("keyup", (e) => {
   filter.addEventListener("change", filterBooks);
 });
 
-// Initialize
-window.addEventListener("load", () => {
-  updateCurrentDate();
-  loadBooks();
-  loadIssuedBooks();
-  loadUserDetails();
+// // Initialize
+// window.addEventListener("load", () => {
+//   updateCurrentDate();
+//   loadBooks();
+//   loadIssuedBooks();
+//   loadUserDetails();
 
-  // Calculate nearest due date
-  if (issuedBooks.length > 0) {
-    const today = new Date();
-    const dueDates = issuedBooks.map((book) => {
-      const dueDate = new Date(book.dueDate);
-      const timeDiff = dueDate.getTime() - today.getTime();
-      return Math.ceil(timeDiff / (1000 * 3600 * 24));
-    });
+// });
+async function initDashboard() {
+  try {
+    // show loader
+    document.getElementById("pageLoader").style.display = "flex";
+    document.getElementById("appContent").style.display = "none";
 
-    const positiveDueDates = dueDates.filter((days) => days >= 0);
-    const nearestDueDate =
-      positiveDueDates.length > 0 ? Math.min(...positiveDueDates) : 0;
+    // wait for ALL APIs
+    await Promise.all([
+      loadUserDetails(),
+      loadBooks(),
+      loadIssuedBooks(),
+    ]);
 
-    document.querySelector(".card-due-date h3").textContent =
-      nearestDueDate > 0 ? `${nearestDueDate} Days` : "Overdue";
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong while loading data");
+  } finally {
+    // hide loader, show app
+    document.getElementById("pageLoader").style.display = "none";
+    document.getElementById("appContent").style.display = "block";
   }
+}
 
-  // Close sidebar when clicking outside on mobile
-  document.addEventListener("click", (e) => {
-    if (
-      window.innerWidth <= 992 &&
-      !dashboardSidebar.contains(e.target) &&
-      !mobileToggle.contains(e.target) &&
-      dashboardSidebar.classList.contains("active")
-    ) {
-      dashboardSidebar.classList.remove("active");
-    }
-  });
-});
+window.addEventListener("load", initDashboard);
+
+window.addEventListener("load", initDashboard);
 
 // Logout Function
 

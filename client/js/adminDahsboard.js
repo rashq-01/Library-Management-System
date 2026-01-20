@@ -26,10 +26,7 @@ const returnDateInput = document.getElementById("returnDate");
 const token = localStorage.getItem("token");
 const tableBodyContainer = document.getElementById("tableBodyContainer");
 
-
-
-
-if(!token){
+if (!token) {
   alert("Unauthorized, Please login again");
   window.location.href = "/pages/login.html";
 }
@@ -47,16 +44,16 @@ function updateCurrentDate() {
 }
 
 // Admin details Load
-async function loadAdminDetails(){
-  try{
-    const response = await fetch(`http://localhost:${PORT}/api/admin/me`,{
-      method : "GET",
-      headers : {
-        "Content-Type" : "application/json",
-        Authorization : `Bearer ${token}`
-      }
+async function loadAdminDetails() {
+  try {
+    const response = await fetch(`http://localhost:${PORT}/api/admin/me`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
-    if(response.status == 401){
+    if (response.status == 401) {
       alert(response.json().message);
       localStorage.removeItem("token");
       window.location.href = "/pages/login.html";
@@ -67,11 +64,11 @@ async function loadAdminDetails(){
 
     document.getElementById("adminName").innerHTML = details.User.fullName;
     document.getElementById("totalBooks").innerHTML = details.totalBooks;
-    document.getElementById("totalIssuedBooks").innerHTML = details.totalIssuedBooks;
+    document.getElementById("totalIssuedBooks").innerHTML =
+      details.totalIssuedBooks;
     document.getElementById("totalStudents").innerHTML = details.totalStudents;
     document.getElementById("lateReturns").innerHTML = details.lateReturns;
-  }
-  catch(err){
+  } catch (err) {
     alert(err.message);
     window.location.href = "/pages/login.html";
     return;
@@ -79,16 +76,16 @@ async function loadAdminDetails(){
 }
 
 // Book Load
-async function loadAllBooks(){
-  try{
-    const response = await fetch(`http://localhost:${PORT}/api/getBook`,{
-      method : "GET",
-      headers : {
-        "Content-Type" : "application/json",
-        Authorization : `Bearer ${token}`
-      }
+async function loadAllBooks() {
+  try {
+    const response = await fetch(`http://localhost:${PORT}/api/getBook`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
-    if(response.status == 401){
+    if (response.status == 401) {
       alert(response.json().message);
       localStorage.removeItem("token");
       window.location.href = "/pages/login.html";
@@ -98,9 +95,8 @@ async function loadAllBooks(){
     const details = await response.json();
     const allBooks = details.BOOKs;
 
-
-    allBooks.forEach((book)=>{
-      tableBodyContainer.innerHTML +=`                       
+    allBooks.forEach((book) => {
+      tableBodyContainer.innerHTML += `                       
                                 <tr>
                                     <td>${book.title}</td>
                                     <td>${book.ISBNNumber}</td>
@@ -111,30 +107,26 @@ async function loadAllBooks(){
                                             <button class="action-btn action-delete" data-isbn=${book.ISBNNumber}><i class="fas fa-trash"></i> Delete</button>
                                         </div>
                                     </td>
-                                </tr>`
-      ;
+                                </tr>`;
     });
-
-  }
-  catch(err){
+  } catch (err) {
     alert(err.message);
     window.location.href = "/pages/login.html";
     return;
   }
 }
 
-
 // All Users Load
-async function loadAllUsers(){
-  try{
-    const response = await fetch(`http://localhost:${PORT}/api/admin/allUser`,{
-      method : "GET",
-      headers : {
-        "Content-Type" : "application/json",
-        Authorization : `Bearer ${token}`
-      }
+async function loadAllUsers() {
+  try {
+    const response = await fetch(`http://localhost:${PORT}/api/admin/allUser`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
-    if(response.status == 401){
+    if (response.status == 401) {
       alert(response.json().message);
       localStorage.removeItem("token");
       window.location.href = "/pages/login.html";
@@ -144,9 +136,8 @@ async function loadAllUsers(){
     const details = await response.json();
     const allUsers = details.Users;
 
-
-    allUsers.forEach((usr)=>{
-      userBodyContainer.innerHTML +=`                       
+    allUsers.forEach((usr) => {
+      userBodyContainer.innerHTML += `                       
                                  <tr>
                                     <td>${usr.fullName}</td>
                                     <td>${usr.rollNumber}</td>
@@ -156,30 +147,29 @@ async function loadAllUsers(){
                                             <button class="action-btn action-delete"><i class="fas fa-trash"></i> Delete</button>
                                         </div>
                                     </td>
-                                </tr>`
-      ;
+                                </tr>`;
     });
-
-  }
-  catch(err){
+  } catch (err) {
     alert(err.message);
     window.location.href = "/pages/login.html";
     return;
   }
 }
 
-
 // All Users Load
-async function recentTransaction(){
-  try{
-    const response = await fetch(`http://localhost:${PORT}/api/admin/recentTransaction`,{
-      method : "GET",
-      headers : {
-        "Content-Type" : "application/json",
-        Authorization : `Bearer ${token}`
-      }
-    });
-    if(response.status == 401){
+async function recentTransaction() {
+  try {
+    const response = await fetch(
+      `http://localhost:${PORT}/api/admin/recentTransaction`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    if (response.status == 401) {
       alert(response.json().message);
       localStorage.removeItem("token");
       window.location.href = "/pages/login.html";
@@ -190,197 +180,183 @@ async function recentTransaction(){
     const allRecentTransaction = details.recentTransactions;
 
     RecentTransaction.innerHTML = "";
-    allRecentTransaction.forEach((tran)=>{
+    allRecentTransaction.forEach((tran) => {
       const date = new Date(tran.transactionDate).toLocaleDateString();
-      RecentTransaction.innerHTML +=`                       
+      RecentTransaction.innerHTML += `                       
                                  <tr>
                                     <td>${tran.student}</td>
                                     <td>${tran.bookTitle}</td>
                                     <td>${tran.transactionType}</td>
                                     <td>${date}</td>
                                     <td><span class="status-badge status-${tran.status.toLowerCase()}">${tran.status}</span></td>
-                                </tr>`
-      ;
+                                </tr>`;
     });
-
-  }
-  catch(err){
+  } catch (err) {
     alert(err.message);
     window.location.href = "/pages/login.html";
     return;
   }
 }
 
-
 // Deleting a book
-async function deleteBook(isbn){
-  try{
-    const response = await fetch(`http://localhost:${PORT}/api/admin/deleteBook`,{
-      method : "DELETE",
-      headers : {
-        "Content-Type" : "application/json",
-        Authorization : `Bearer ${token}`
+async function deleteBook(isbn) {
+  try {
+    const response = await fetch(
+      `http://localhost:${PORT}/api/admin/deleteBook`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ISBNNumber: isbn,
+        }),
       },
-      body : JSON.stringify({
-        ISBNNumber : isbn
-      })
-    });
+    );
     const data = await response.json();
 
-    if(!data.success){
+    if (!data.success) {
       alert(data.message);
       return;
     }
-    alert('Book deleted successfully.');
-    document.querySelector(`button[data-isbn="${isbn}"]`).closest("tr").remove();
-
-
-  }
-  catch(err){
+    alert("Book deleted successfully.");
+    document
+      .querySelector(`button[data-isbn="${isbn}"]`)
+      .closest("tr")
+      .remove();
+  } catch (err) {
     alert(err.message);
     console.log(err);
   }
 }
 
-tableBodyContainer.addEventListener("click",async (e)=>{
+tableBodyContainer.addEventListener("click", async (e) => {
   const deleteBtn = e.target.closest(".action-delete");
-  console.log("clicked on the tableBodyContainer",deleteBtn);
+  console.log("clicked on the tableBodyContainer", deleteBtn);
 
-  if(!deleteBtn) return;
+  if (!deleteBtn) return;
 
   const isbn = deleteBtn.dataset.isbn;
 
-  if(!isbn)return;
+  if (!isbn) return;
 
-  if(!confirm("Are you sure your want to delete this book?")) return;
+  if (!confirm("Are you sure your want to delete this book?")) return;
 
   await deleteBook(isbn);
-})
-
-
+});
 
 // Issuing a book
-async function issueBook(){
-  try{
+async function issueBook() {
+  try {
     const rollNumber = document.getElementById("studentRollNumber").value;
     const ISBNNumber = document.getElementById("bookId").value;
-    const response = await fetch(`http://localhost:${PORT}/api/admin/issue`,{
-      method : "POST",
-      headers : {
-        "Content-Type" : "application/json",
-        Authorization : `Bearer ${token}`
+    const response = await fetch(`http://localhost:${PORT}/api/admin/issue`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body : JSON.stringify({
-        ISBNNumber : ISBNNumber,
-        rollNumber : rollNumber
-      })
+      body: JSON.stringify({
+        ISBNNumber: ISBNNumber,
+        rollNumber: rollNumber,
+      }),
     });
     const data = await response.json();
     document.getElementById("IssueDisplay").innerHTML = data.message;
     recentTransaction();
-
-  }
-  catch(err){
+  } catch (err) {
     alert(err.message);
     console.log(err);
   }
 }
 const issueBtn = document.getElementById("issueForm");
-issueBtn.addEventListener("submit",async (e)=>{
+issueBtn.addEventListener("submit", async (e) => {
   e.preventDefault();
   await issueBook();
-})
-
+});
 
 // Calculating fine
-async function calculateFine(){
-  try{
+async function calculateFine() {
+  try {
     const rollNumber = document.getElementById("returnRollId").value;
     const ISBNNumber = document.getElementById("returnBookISBN").value;
     const returnDate = document.getElementById("returnDate").value;
     console.log(returnDate);
-    const response = await fetch(`http://localhost:${PORT}/api/admin/calculate`,{
-      method : "POST",
-      headers : {
-        "Content-Type" : "application/json",
-        Authorization : `Bearer ${token}`
+    const response = await fetch(
+      `http://localhost:${PORT}/api/admin/calculate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ISBNNumber: ISBNNumber,
+          rollNumber: rollNumber,
+          returnDate: returnDate,
+        }),
       },
-      body : JSON.stringify({
-        ISBNNumber : ISBNNumber,
-        rollNumber : rollNumber,
-        returnDate : returnDate
-      })
-    });
+    );
     const data = await response.json();
     console.log(data);
 
-    if(!data.success){
+    if (!data.success) {
       alert(data.message);
-
+    } else {
+      document.getElementById("returnDisplay").innerHTML =
+        `Fine Amount : <i class="fa-solid fa-indian-rupee-sign"></i> ${data.fine}`;
     }
-    else{
-      document.getElementById("returnDisplay").innerHTML = `Fine Amount : <i class="fa-solid fa-indian-rupee-sign"></i> ${data.fine}`
-    }
-
-
-  }
-  catch(err){
+  } catch (err) {
     alert(err.message);
     console.log(err);
   }
 }
 
-calculateFineBtn.addEventListener("click" ,async (e)=>{
+calculateFineBtn.addEventListener("click", async (e) => {
   e.preventDefault();
   await calculateFine();
-})
-
+});
 
 // Completing Return
-async function completeReturn(){
-  try{
+async function completeReturn() {
+  try {
     const rollNumber = document.getElementById("returnRollId").value;
     const ISBNNumber = document.getElementById("returnBookISBN").value;
     const returnDate = document.getElementById("returnDate").value;
     console.log(returnDate);
-    const response = await fetch(`http://localhost:${PORT}/api/admin/return`,{
-      method : "POST",
-      headers : {
-        "Content-Type" : "application/json",
-        Authorization : `Bearer ${token}`
+    const response = await fetch(`http://localhost:${PORT}/api/admin/return`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-      body : JSON.stringify({
-        ISBNNumber : ISBNNumber,
-        rollNumber : rollNumber,
-        returnDate : returnDate
-      })
+      body: JSON.stringify({
+        ISBNNumber: ISBNNumber,
+        rollNumber: rollNumber,
+        returnDate: returnDate,
+      }),
     });
     const data = await response.json();
     console.log(data);
 
-    if(!data.success){
+    if (!data.success) {
       alert(data.message);
-
-    }
-    else{
-      document.getElementById("returnDisplay").innerHTML = `Return successful and Fine Amount : <i class="fa-solid fa-indian-rupee-sign"></i> ${data.fine}`
+    } else {
+      document.getElementById("returnDisplay").innerHTML =
+        `Return successful and Fine Amount : <i class="fa-solid fa-indian-rupee-sign"></i> ${data.fine}`;
       recentTransaction();
     }
-
-
-  }
-  catch(err){
+  } catch (err) {
     alert(err.message);
     console.log(err);
   }
 }
 
-document.getElementById("returnForm").addEventListener("click" ,async (e)=>{
+document.getElementById("returnForm").addEventListener("click", async (e) => {
   e.preventDefault();
   await completeReturn();
-})
-
-
+});
 
 // Save book  // API call
 saveBookBtn.addEventListener("click", async () => {
@@ -396,7 +372,7 @@ saveBookBtn.addEventListener("click", async () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
       // title,ISBNNumber,author,category,publisher,publishedYear,edition,pages,language,location,description,totalCopies
       body: JSON.stringify({
@@ -422,10 +398,6 @@ saveBookBtn.addEventListener("click", async () => {
     console.error(err.message);
   }
 });
-
-
-
-
 
 // Tab navigation
 menuItems.forEach((item) => {
@@ -519,24 +491,6 @@ addBookModal.addEventListener("click", (e) => {
 });
 
 
-// Set default dates for issue form
-window.addEventListener("load", () => {
-  updateCurrentDate();
-  loadAdminDetails();
-  loadAllBooks();
-  loadAllUsers();
-  recentTransaction();
-
-  // Set default dates for issue form
-  const today = new Date();
-  const dueDate = new Date(today);
-  dueDate.setDate(today.getDate() + 14); // 14 days from today
-
-  if (returnDateInput) {
-    returnDateInput.value = today.toISOString().split("T")[0];
-  }
-});
-
 // Closing sidebar when clicking outside on mobile
 document.addEventListener("click", (e) => {
   if (
@@ -548,6 +502,44 @@ document.addEventListener("click", (e) => {
     dashboardSidebar.classList.remove("active");
   }
 });
+
+async function initDashboard() {
+  try {
+    // show loader
+    document.getElementById("pageLoader").style.display = "flex";
+    document.getElementById("appContent").style.display = "none";
+    updateCurrentDate();
+    loadAdminDetails();
+    loadAllBooks();
+    loadAllUsers();
+    recentTransaction();
+    // wait for ALL APIs
+    await Promise.all([
+      updateCurrentDate(),
+      updateCurrentDate(),
+      loadAllBooks(),
+      loadAllUsers(),
+      recentTransaction(),
+    ]);
+    // Set default dates for issue form
+    const today = new Date();
+    const dueDate = new Date(today);
+    dueDate.setDate(today.getDate() + 14); // 14 days from today
+    
+    if (returnDateInput) {
+      returnDateInput.value = today.toISOString().split("T")[0];
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong while loading data");
+  } finally {
+    // hide loader, show app
+    document.getElementById("pageLoader").style.display = "none";
+    document.getElementById("appContent").style.display = "block";
+  }
+}
+
+window.addEventListener("load", initDashboard);
 
 // Keyboard shortcuts
 document.addEventListener("keydown", (e) => {
@@ -564,7 +556,6 @@ document.addEventListener("keydown", (e) => {
     }
   }
 });
-
 
 // Logout Function
 
