@@ -2,10 +2,8 @@
 const loginForm = document.getElementById("loginForm");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
-const roleSelect = document.getElementById("role");
 const emailError = document.getElementById("emailError");
 const passwordError = document.getElementById("passwordError");
-const roleError = document.getElementById("roleError");
 
 // Email/Roll No validation
 function validateEmailOrRollNo(value) {
@@ -90,7 +88,7 @@ loginForm.addEventListener("submit", async (e) => {
   } else {
     showSuccess(passwordInput, passwordError);
   }
-  // If valid, submit form (in real app, this would go to server)
+  // If valid, submit form
   if (isValid) {
     // Simulate login process
     const submitBtn = loginForm.querySelector(".btn-primary");
@@ -160,50 +158,3 @@ forgotPasswordLink.addEventListener("click", function (e) {
     }
   }
 });
-
-//Backend Connections
-
-// loginForm.addEventListener("submit", async (e) => {
-//   e.preventDefault();
-//   const emailOrRoll = document.getElementById("email").value;
-//   const password = document.getElementById("password").value;
-
-//   if (!emailOrRoll || !password) {
-//     alert("All fields are required.");
-//     return;
-//   }
-
-//   try {
-//     const response = await fetch("http://localhost:5000/api/login", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         emailOrRoll,
-//         password,
-//       }),
-//     });
-
-//     const data = await response.json();
-
-//     if (!data.success) {
-//       alert(data.message || "Login Failed");
-//       return;
-//     }
-
-//     localStorage.setItem("token", data.token);
-//     localStorage.setItem("role", data.role);
-
-//     if (data.role == "student") {
-//       window.location.href = "/pages/studentDashboard.html";
-//     } else if (data.role == "admin") {
-//       window.location.hre = "/pages/adminDashboard.html";
-//     } else {
-//       alert("Unknown Role");
-//     }
-//   } catch (err) {
-//     alert("Server Error");
-//     console.error(err.message);
-//   }
-// });

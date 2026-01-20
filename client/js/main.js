@@ -49,9 +49,9 @@ const observer = new IntersectionObserver(
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         // Start the counters
-        animateCounter("bookCount", 12543, 2000);
-        animateCounter("studentCount", 3421, 2000);
-        animateCounter("issuedCount", 8924, 2000);
+        animateCounter("bookCount", 12543, 2000); // temporary adding random values
+        animateCounter("studentCount", 3421, 2000); // temporary adding random values
+        animateCounter("issuedCount", 8924, 2000); // temporary adding random values
 
         // Unobserve after triggering once
         observer.unobserve(entry.target);

@@ -144,7 +144,7 @@ function showBookDetails(bookId) {
   const statusClass =
     book.issuedCopies < book.totalCopies ? "status-available" : "status-issued";
   const statusText =
-    book.status === "available" ? "Available" : "Currently Issued";
+    book.issuedCopies < book.totalCopies ? "Available" : "Currently Issued";
   const statusIcon = book.issuedCopies < book.totalCopies ? "🟢" : "🔴";
 
   modalBody.innerHTML = `

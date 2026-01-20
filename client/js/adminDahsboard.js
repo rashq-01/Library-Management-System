@@ -4,7 +4,6 @@ const PORT = 5000;
 const dashboardSidebar = document.getElementById("dashboardSidebar");
 const mobileToggle = document.getElementById("mobileToggle");
 const menuItems = document.querySelectorAll(".menu-item");
-const tabs = document.querySelectorAll(".tab");
 const subtabs = document.querySelectorAll("[data-subtab]");
 const currentDateElement = document.getElementById("currentDate");
 
@@ -17,11 +16,6 @@ const saveBookBtn = document.getElementById("saveBookBtn");
 // Issue/Return Elements
 const calculateFineBtn = document.getElementById("calculateFineBtn");
 const fineDisplay = document.getElementById("fineDisplay");
-const fineAmount = document.getElementById("fineAmount");
-const fineBookId = document.getElementById("fineBookId");
-const fineDueDate = document.getElementById("fineDueDate");
-const fineReturnDate = document.getElementById("fineReturnDate");
-const daysOverdue = document.getElementById("daysOverdue");
 const returnDateInput = document.getElementById("returnDate");
 const token = localStorage.getItem("token");
 const tableBodyContainer = document.getElementById("tableBodyContainer");
@@ -135,9 +129,10 @@ async function loadAllUsers() {
 
     const details = await response.json();
     const allUsers = details.Users;
+    let html = '';
 
     allUsers.forEach((usr) => {
-      userBodyContainer.innerHTML += `                       
+      html += `                       
                                  <tr>
                                     <td>${usr.fullName}</td>
                                     <td>${usr.rollNumber}</td>
@@ -149,6 +144,7 @@ async function loadAllUsers() {
                                     </td>
                                 </tr>`;
     });
+    userBodyContainer.innerHTML = html;
   } catch (err) {
     alert(err.message);
     window.location.href = "/pages/login.html";
@@ -509,14 +505,9 @@ async function initDashboard() {
     document.getElementById("pageLoader").style.display = "flex";
     document.getElementById("appContent").style.display = "none";
     updateCurrentDate();
-    loadAdminDetails();
-    loadAllBooks();
-    loadAllUsers();
-    recentTransaction();
     // wait for ALL APIs
     await Promise.all([
-      updateCurrentDate(),
-      updateCurrentDate(),
+      loadAdminDetails(),
       loadAllBooks(),
       loadAllUsers(),
       recentTransaction(),
