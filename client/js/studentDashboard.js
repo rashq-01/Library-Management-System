@@ -115,7 +115,6 @@ async function loadBooks(filteredBooks) {
                     `;
       return;
     }
-    
 
     filteredBooks.forEach((book) => {
       const bookCard = document.createElement("div");
@@ -168,25 +167,30 @@ async function loadUserDetails() {
     return;
   }
   const details = await response.json();
+  console.log(details);
   document.getElementById("fullName").innerHTML = details.user.fullName;
-  document.getElementById(
-    "rollNumber"
-  ).innerHTML = `Roll No : ${details.user.rollNumber.toUpperCase()}`;
+  document.getElementById("rollNumber").innerHTML =
+    `Roll No : ${details.user.rollNumber.toUpperCase()}`;
   document.getElementById("fullName").innerHTML = details.user.fullName;
-  document.getElementById(
-    "rollNumber"
-  ).innerHTML = `Roll No: ${details.user.rollNumber.toUpperCase()}`;
+  document.getElementById("rollNumber").innerHTML =
+    `Roll No: ${details.user.rollNumber.toUpperCase()}`;
   document.getElementById("totalIssuedBooks").innerHTML =
-    details.totalIssuedBooks;
-  let today = new Date();
-  let dueDate = Math.ceil(
-    (new Date(details.nearestDueBook.dueDate) - today) / (1000 * 60 * 60 * 24)
-  );
-  document.getElementById("nearestDueDate").innerHTML = `${dueDate} Days`;
-  document.getElementById(
-    "totalFine"
-  ).innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i> ${details.totalFinePending}`;
-  document.getElementById("totalAvailableBooks").innerHTML = details.totalAvailableBooks;
+  details.totalIssuedBooks;
+  const today = new Date();
+  let daysLeft = -1;
+
+  if (details.nearestDueBook && details.nearestDueBook.dueDate) {
+    daysLeft = Math.ceil(
+      (new Date(details.nearestDueBook.dueDate) - today) /
+        (1000 * 60 * 60 * 24),
+    );
+  }
+
+  document.getElementById("nearestDueDate").innerHTML = `${daysLeft>=0 ? daysLeft+" Days" : " No Due"}`;
+  document.getElementById("totalFine").innerHTML =
+    `<i class="fa-solid fa-indian-rupee-sign"></i> ${details.totalFinePending}`;
+  document.getElementById("totalAvailableBooks").innerHTML =
+    details.totalAvailableBooks;
   let headName = details.user.fullName;
   let firstName = headName?.trim().split(/\s+/)[0] || "";
   document.getElementById("headName").innerHTML = firstName;
@@ -249,11 +253,15 @@ async function loadIssuedBooks() {
         statusClass = "status-overdue";
         statusText = `${daysLeft} days`;
       }
-      let particularFine = Math.ceil((today-dueDate)/(1000*60*60*24))*30 > 0 ?  Math.ceil((today-dueDate)/(1000*60*60*24))*5 : 0;
-      const fineClass =
-        particularFine > 0 ? "fine-amount" : "no-fine";
+      let particularFine =
+        Math.ceil((today - dueDate) / (1000 * 60 * 60 * 24)) * 30 > 0
+          ? Math.ceil((today - dueDate) / (1000 * 60 * 60 * 24)) * 5
+          : 0;
+      const fineClass = particularFine > 0 ? "fine-amount" : "no-fine";
       const fineText =
-        particularFine> 0 ? `<i class="fa-solid fa-indian-rupee-sign"></i> ${particularFine}` : "No fine";
+        particularFine > 0
+          ? `<i class="fa-solid fa-indian-rupee-sign"></i> ${particularFine}`
+          : "No fine";
 
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -285,15 +293,20 @@ function filterBooks() {
       book.ISBNNumber.includes(searchTerm);
 
     // Category filter
-    const matchesCategory = !category || book.category.toLowerCase() === category.toLowerCase();
+    const matchesCategory =
+      !category || book.category.toLowerCase() === category.toLowerCase();
 
     // Author filter
-    const matchesAuthor = !author || book.author.toLowerCase() === author.toLowerCase();
+    const matchesAuthor =
+      !author || book.author.toLowerCase() === author.toLowerCase();
 
     // Availability filter
     const isAvailable = book.totalCopies > book.issuedCopies;
 
-    const matchesAvailability = !availability || (availability === "available" && isAvailable) || (availability=="unavailable" && !isAvailable);
+    const matchesAvailability =
+      !availability ||
+      (availability === "available" && isAvailable) ||
+      (availability == "unavailable" && !isAvailable);
 
     return (
       matchesSearch && matchesCategory && matchesAuthor && matchesAvailability
@@ -315,7 +328,7 @@ function issueBook(bookId) {
 
   if (issuedBooks.length >= 5) {
     alert(
-      "You have reached the maximum limit of 5 books. Please return some books before issuing new ones."
+      "You have reached the maximum limit of 5 books. Please return some books before issuing new ones.",
     );
     return;
   }
@@ -348,7 +361,7 @@ function issueBook(bookId) {
     alert(
       `Book "${
         book.title
-      }" issued successfully! Due date: ${dueDate.toLocaleDateString()}`
+      }" issued successfully! Due date: ${dueDate.toLocaleDateString()}`,
     );
   }
 }
@@ -395,7 +408,7 @@ function viewBookDetails(bookId) {
       `Category: ${book.category}\n` +
       `ISBN: ${book.ISBNNumber}\n` +
       `Status: ${status}\n\n` +
-      `Description: ${book.description}`
+      `Description: ${book.description}`,
   );
 }
 
@@ -434,12 +447,6 @@ window.addEventListener("load", () => {
     document.querySelector(".card-due-date h3").textContent =
       nearestDueDate > 0 ? `${nearestDueDate} Days` : "Overdue";
   }
-
-  // Calculate total fine
-  const totalFine = issuedBooks.reduce((sum, book) => sum + book.fine, 0);
-  document.querySelector(".card-fine h3").textContent = `$${totalFine.toFixed(
-    2
-  )}`;
 
   // Close sidebar when clicking outside on mobile
   document.addEventListener("click", (e) => {
