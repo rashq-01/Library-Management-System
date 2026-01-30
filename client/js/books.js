@@ -1,3 +1,4 @@
+import {PORT,HOST} from "./HOST.js";
 // DOM Elements
 const hamburger = document.getElementById("hamburger");
 const navLinks = document.getElementById("navLinks");
@@ -12,7 +13,7 @@ const emptyState = document.getElementById("emptyState");
 const bookDetailsModal = document.getElementById("bookDetailsModal");
 const closeModalBtn = document.getElementById("closeModalBtn");
 const modalBody = document.getElementById("modalBody");
-const PORT = 5000;
+
 
 // Mobile Menu Toggle
 hamburger.addEventListener("click", () => {
@@ -32,7 +33,7 @@ let booksData = [];
 async function getAllBooks() {
   try {
     loading.style.display = "block";
-    const response = await fetch(`http://localhost:${PORT}/api/bookCatalog`, {
+    const response = await fetch(`http://${HOST}:${PORT}/api/bookCatalog`, {
       method: "GET",
     });
     const data = await response.json();

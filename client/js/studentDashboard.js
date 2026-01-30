@@ -1,4 +1,4 @@
-const PORT = 5000;
+import {PORT,HOST} from "./HOST.js";
 // DOM Elements
 const dashboardSidebar = document.getElementById("dashboardSidebar");
 const mobileToggle = document.getElementById("mobileToggle");
@@ -81,7 +81,7 @@ mobileToggle.addEventListener("click", () => {
 async function loadBooks(filteredBooks) {
   try {
     if (!filteredBooks) {
-      const response = await fetch("http://localhost:5000/api/getBook", {
+      const response = await fetch(`http://${HOST}:${PORT}/api/getBook`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -157,7 +157,7 @@ async function loadBooks(filteredBooks) {
 
 async function loadUserDetails() {
   try {
-    const response = await fetch(`http://localhost:${PORT}/api/me`, {
+    const response = await fetch(`http://${HOST}:${PORT}/api/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -207,7 +207,7 @@ async function loadUserDetails() {
 // Load issued books into the table
 async function loadIssuedBooks() {
   try {
-    const response = await fetch(`http://localhost:${PORT}/api/me`, {
+    const response = await fetch(`http://${HOST}:${PORT}/api/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

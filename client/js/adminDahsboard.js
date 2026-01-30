@@ -1,5 +1,4 @@
-const PORT = 5000;
-
+import {PORT,HOST} from "./HOST.js";
 // DOM Elements
 const dashboardSidebar = document.getElementById("dashboardSidebar");
 const mobileToggle = document.getElementById("mobileToggle");
@@ -40,7 +39,7 @@ function updateCurrentDate() {
 // Admin details Load
 async function loadAdminDetails() {
   try {
-    const response = await fetch(`http://localhost:${PORT}/api/admin/me`, {
+    const response = await fetch(`http://${HOST}:${PORT}/api/admin/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -72,7 +71,7 @@ async function loadAdminDetails() {
 // Book Load
 async function loadAllBooks() {
   try {
-    const response = await fetch(`http://localhost:${PORT}/api/getBook`, {
+    const response = await fetch(`http://${HOST}:${PORT}/api/getBook`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -113,7 +112,7 @@ async function loadAllBooks() {
 // All Users Load
 async function loadAllUsers() {
   try {
-    const response = await fetch(`http://localhost:${PORT}/api/admin/allUser`, {
+    const response = await fetch(`http://${HOST}:${PORT}/api/admin/allUser`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -156,7 +155,7 @@ async function loadAllUsers() {
 async function recentTransaction() {
   try {
     const response = await fetch(
-      `http://localhost:${PORT}/api/admin/recentTransaction`,
+      `http://${HOST}:${PORT}/api/admin/recentTransaction`,
       {
         method: "GET",
         headers: {
@@ -198,7 +197,7 @@ async function recentTransaction() {
 async function deleteBook(isbn) {
   try {
     const response = await fetch(
-      `http://localhost:${PORT}/api/admin/deleteBook`,
+      `http://${HOST}:${PORT}/api/admin/deleteBook`,
       {
         method: "DELETE",
         headers: {
@@ -247,7 +246,7 @@ async function issueBook() {
   try {
     const rollNumber = document.getElementById("studentRollNumber").value;
     const ISBNNumber = document.getElementById("bookId").value;
-    const response = await fetch(`http://localhost:${PORT}/api/admin/issue`, {
+    const response = await fetch(`http://${HOST}:${PORT}/api/admin/issue`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -280,7 +279,7 @@ async function calculateFine() {
     const returnDate = document.getElementById("returnDate").value;
     console.log(returnDate);
     const response = await fetch(
-      `http://localhost:${PORT}/api/admin/calculate`,
+      `http://${HOST}:${PORT}/api/admin/calculate`,
       {
         method: "POST",
         headers: {
@@ -321,7 +320,7 @@ async function completeReturn() {
     const ISBNNumber = document.getElementById("returnBookISBN").value;
     const returnDate = document.getElementById("returnDate").value;
     console.log(returnDate);
-    const response = await fetch(`http://localhost:${PORT}/api/admin/return`, {
+    const response = await fetch(`http://${HOST}:${PORT}/api/admin/return`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -364,7 +363,7 @@ saveBookBtn.addEventListener("click", async () => {
       window.location.href = "/pages/login.html";
       return;
     }
-    const response = await fetch(`http://localhost:${PORT}/api/addBook`, {
+    const response = await fetch(`http://${HOST}:${PORT}/api/addBook`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

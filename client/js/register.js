@@ -1,3 +1,4 @@
+import {PORT,HOST} from "./HOST.js";
 // Form elements
 const registerForm = document.getElementById("registerForm");
 const fullNameInput = document.getElementById("fullName");
@@ -17,6 +18,7 @@ const confirmPasswordError = document.getElementById("confirmPasswordError");
 
 // Password strength element
 const passwordStrength = document.getElementById("passwordStrength");
+
 
 // Validation functions
 function validateName(value) {
@@ -252,7 +254,7 @@ registerForm.addEventListener("submit", async (e) => {
     registerBtn.textContent = "Creating account...";
     registerBtn.disabled = true;
     try{
-      const response = await fetch("http://localhost:5000/api/register",{
+      const response = await fetch(`http://${HOST}:${PORT}/api/register`,{
         method : "POST",
         headers : {
           "Content-Type": "application/json"
@@ -268,13 +270,15 @@ registerForm.addEventListener("submit", async (e) => {
       });
 
       const data = await response.json();
+      const infoSection = document.getElementById("infoSection");
 
       if(!data.success){
-        alert(data.message);
+        infoSection.className = "failureSection";
+        infoSection.innerHTML = data.message;
         return;
       }
-      alert(data.message);
-      window.location.href = "/pages/login.html";
+      infoSection.className = "successSection";
+      infoSection.innerHTML = data.message;
     }
     catch(err){
       alert(err.message);
