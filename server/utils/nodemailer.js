@@ -15,7 +15,6 @@ async function sendMail({to,subject,html}) {
     subject,
     html
   });
-  console.log("email sent");
 }
 
 module.exports = sendMail;
