@@ -26,6 +26,12 @@ The backend is built following **MVC architecture**, clean routing, and proper s
 - User Login
 - JWT-based authentication
 - Role-based access control (Admin / User)
+  
+### 📧 Email Verification (Nodemailer)
+- Send verification email on registration
+- Secure token generated using crypto.randomBytes
+- Verify account via email link
+- Login allowed only after verification
 
 ### 📘 Book Management (Admin Only)
 - Add books with multiple copies
@@ -58,6 +64,7 @@ The backend is built following **MVC architecture**, clean routing, and proper s
 - **Mongoose** – ODM for MongoDB
 - **JWT (JSON Web Token)** – Authentication
 - **bcrypt** – Password hashing
+- **nodemailer** – Email Verification
 - **dotenv** – Environment variables
 - **cors** – Cross-origin requests
 - **nodemon** – Development server
@@ -105,6 +112,7 @@ Library-Management-System/<br>
 │ ├── controllers/ # Business logic<br>
 │ ├── middleware/ # Auth & error middleware<br>
 │ ├── config/ # DB configuration<br>
+│ ├── utils/ # Email Sendings<br>
 │ └── server.js # Server entry point<br>
 │<br>
 ├── screenshots/<br>
